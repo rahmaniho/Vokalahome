@@ -1,4 +1,4 @@
 User-agent: *
-Allow: /
+Allow: /Vokalahome/
 
-Sitemap: https://khanevokala.com/sitemap.xml
+Sitemap: https://rahmaniho.github.io/Vokalahome/sitemap.xml
