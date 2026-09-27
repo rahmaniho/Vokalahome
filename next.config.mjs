@@ -1,19 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // 1. فعال‌سازی خروجی استاتیک
-  output: 'export', 
+  output: 'export',
   
-  // 2. غیرفعال‌سازی بهینه‌سازی تصاویر (برای هاست استاتیک الزامی است)
+  // 2. غیرفعال‌سازی بهینه‌سازی تصاویر (الزامی برای استاتیک)
   images: {
     unoptimized: true,
   },
   
-  // 3. تنظیم مسیر پایه (اگر سایت را روی دامنه اصلی مثل khanevokala.com منتشر می‌کنید، این خط را کامنت کنید)
-  // basePath: '/Vokalahome', 
-  // assetPrefix: '/Vokalahome/',
-
-  // 4. برای جلوگیری از خطای ۴۰۴ در صفحات داخلی در GitHub Pages
+  // 3. مسیر پایه - بسیار مهم برای GitHub Pages زیرمسیر
+  basePath: '/Vokalahome',
+  assetPrefix: '/Vokalahome/',
+  
+  // 4. برای جلوگیری از خطای ۴۰۴
   trailingSlash: true,
+  
+  // 5. در محیط development مسیر پایه غیرفعال باشد
+  ...(process.env.NODE_ENV === 'development' && {
+    basePath: '',
+    assetPrefix: '',
+  }),
 };
 
 export default nextConfig;
