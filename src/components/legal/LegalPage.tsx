@@ -1,0 +1,5 @@
+import { AlertCircle } from 'lucide-react';
+import { PageHero } from '@/components/layout/PageHero';
+
+type Section={title:string;paragraphs:string[]};
+export function LegalPage({title,description,sections}:{title:string;description:string;sections:Section[]}){return <><PageHero eyebrow="اسناد حقوقی وب‌سایت" current={title} title={title} description={description}/><article className="section-space"><div className="container-shell"><div className="mx-auto max-w-3xl rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm sm:p-10"><div className="mb-8 flex gap-3 rounded-2xl bg-amber-50 p-4 text-xs leading-7 text-amber-900"><AlertCircle className="mt-1 shrink-0" size={18}/><p>آخرین به‌روزرسانی: ۵ مهر ۱۴۰۵ — متن حاضر نسخه پیشنهادی است و پیش از انتشار نهایی باید توسط مدیر مؤسسه بازبینی شود.</p></div><div className="prose-fa">{sections.map(section=><section key={section.title}><h2>{section.title}</h2>{section.paragraphs.map(p=><p key={p}>{p}</p>)}</section>)}</div></div></div></article></>}
