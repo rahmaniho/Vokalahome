@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Award, BadgeCheck, BookOpenCheck, CalendarCheck2, Check, Clock3, FileSearch, Gavel, Headphones, Mail, MapPin, MessageCircle, Phone, Scale, ShieldCheck, Sparkles, Target, UsersRound } from 'lucide-react';
+import {
+  ArrowLeft, BadgeCheck, BookOpenCheck, Coffee, DoorOpen, Handshake, Landmark, Lightbulb,
+  MapPin, MessageCircle, Phone, ShieldCheck, Sparkles, UsersRound, Wifi,
+} from 'lucide-react';
 import { Hero } from './Hero';
 import { Reveal } from '@/components/animation/Reveal';
 import { CountUp } from '@/components/animation/CountUp';
@@ -9,60 +12,250 @@ import { Button } from '@/components/ui/Button';
 import { ServiceCard } from '@/components/cards/ServiceCard';
 import { LawyerCard } from '@/components/cards/LawyerCard';
 import { ArticleCard } from '@/components/cards/ArticleCard';
+import { PlanCard } from '@/components/cards/PlanCard';
+import { RoomCard } from '@/components/cards/RoomCard';
+import { EventCard } from '@/components/cards/EventCard';
 import { FaqAccordion } from '@/components/interactive/FaqAccordion';
 import { TestimonialSlider } from '@/components/interactive/TestimonialSlider';
-import { BookingWidget } from '@/components/consultation/BookingWidget';
-import { ConsultationCards } from '@/components/consultation/ConsultationCards';
 import { services } from '@/lib/data/services';
 import { lawyers } from '@/lib/data/lawyers';
 import { articles } from '@/lib/data/articles';
 import { faqs } from '@/lib/data/faqs';
-import { SITE } from '@/lib/constants';
+import { plans } from '@/lib/data/plans';
+import { rooms } from '@/lib/data/rooms';
+import { events } from '@/lib/data/events';
+import { SITE, ROOM_RATE, QUICK_FACTS } from '@/lib/constants';
 
-const stats = [[1200,'+','پرونده و مشاوره'],[14,'+','سال تجربه حرفه‌ای'],[92,'٪','رضایت ثبت‌شده'],[6,'','حوزه تخصصی']];
 const why = [
-  [FileSearch,'تحلیل پیش از اقدام','پیش از هر تصمیم، اسناد، ریسک‌ها و مسیرهای ممکن را دقیق بررسی می‌کنیم.'],
-  [MessageCircle,'ارتباط شفاف','مراحل پرونده و هزینه‌ها را روشن، قابل‌فهم و بدون ابهام توضیح می‌دهیم.'],
-  [ShieldCheck,'حفظ محرمانگی','اطلاعات و مستندات شما با بالاترین سطح محرمانگی نگهداری می‌شود.'],
-  [Target,'استراتژی اختصاصی','هیچ دو پرونده‌ای یکسان نیست؛ راهکار متناسب با شرایط شما طراحی می‌شود.'],
-  [Headphones,'پاسخ‌گویی منظم','گزارش روند پرونده و پاسخ به پرسش‌ها در چارچوب زمانی مشخص انجام می‌شود.'],
-  [BookOpenCheck,'دانش به‌روز','قوانین، آرای وحدت رویه و رویه‌های جدید مستمر مطالعه و تحلیل می‌شوند.'],
+  [Coffee, 'کافه، نه سالن انتظار', 'فضای گرم با قهوه تخصصی؛ جایی که گفت‌وگوی حقوقی به‌جای راهروی دادگاه، پشت میز چوبی شکل می‌گیرد.'],
+  [DoorOpen, 'دفتر، بدون اجاره دفتر', 'اتاق‌های مشاوره مجهز و عایق صدا برای ملاقات با موکل؛ رایگان برای اعضا، ساعتی ۵۰۰ هزار تومان برای مهمانان.'],
+  [Lightbulb, 'تبادل دانش واقعی', 'نشست تحلیل آرا، کارگاه لایحه‌نویسی و میزگرد تخصصی؛ هر هفته دست‌کم یک برنامه علمی.'],
+  [Handshake, 'شبکه همکاری', 'پیدا کردن همکار پرونده، وکیل شهر دیگر یا کارشناس، فقط با یک گفت‌وگو در کافه.'],
+  [UsersRound, 'ارجاع مراجعان', 'مراجعان خانه وکلا بر اساس تخصص به وکلای عضو ارجاع داده می‌شوند.'],
+  [ShieldCheck, 'محرمانگی حرفه‌ای', 'اتاق‌های بدون دوربین، عایق صوتی و کارکنانی متعهد به رازداری حرفه‌ای.'],
 ];
-const journey = [['۱','شنیدن و شناخت','جلسه اولیه و دریافت تصویر دقیق مسئله'],['۲','بررسی اسناد','مطالعه مستندات و شناسایی خلأها'],['۳','طراحی مسیر','ارائه گزینه‌ها، ریسک و برآورد زمانی'],['۴','اقدام و دفاع','مذاکره، تنظیم اسناد یا پیگیری قضایی'],['۵','گزارش و نتیجه','اطلاع‌رسانی تا اجرای کامل تصمیم']];
 
-export function HomeSections(){return <>
-  <Hero/>
-  <section id="stats" className="relative z-20 -mt-8"><div className="container-shell"><Reveal><div className="grid overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-soft sm:grid-cols-2 lg:grid-cols-4">{stats.map(([number,suffix,label],index)=><div key={label as string} className="relative p-6 text-center lg:p-8">{index>0&&<i className="absolute right-0 top-1/4 hidden h-1/2 w-px bg-gradient-to-b from-transparent via-gray-200 to-transparent lg:block"/>}<strong className="block text-3xl font-black text-navy-900 lg:text-4xl"><CountUp end={number as number} suffix={suffix as string}/></strong><span className="mt-2 block text-xs text-gray-500">{label as string}</span></div>)}</div></Reveal></div></section>
+const amenities = [
+  [Wifi, 'اینترنت اختصاصی پرسرعت'],
+  [BookOpenCheck, 'کتابخانه و بانک آرای قضایی'],
+  [Landmark, 'نزدیکی به دادگستری و مراجع قضایی'],
+  [BadgeCheck, 'پذیرش و منشی حرفه‌ای'],
+  [Coffee, 'قهوه تخصصی با تخفیف اعضا'],
+  [Sparkles, 'پارکینگ مهمان و اتاق انتظار موکل'],
+];
 
-  <section className="section-space overflow-hidden"><div className="container-shell grid items-center gap-14 lg:grid-cols-2">
-    <Reveal direction="right" className="relative"><div className="relative mr-4 aspect-[5/4] overflow-hidden rounded-[2rem] bg-navy-900"><Image src="/images/hero/legal-office.jpg" alt="فضای حرفه‌ای مؤسسه حقوقی خانه وکیل" fill sizes="(max-width:1024px) 100vw,50vw" className="object-cover opacity-85"/><div className="absolute inset-0 bg-gradient-to-t from-navy-950/60 to-transparent"/></div><div className="absolute -bottom-6 right-0 rounded-2xl border border-white bg-white p-5 shadow-soft"><strong className="block text-2xl font-black text-navy-900">۱۴ سال</strong><span className="text-[11px] text-gray-500">تجربه در کنار شما</span></div><div className="legal-pattern absolute -left-8 -top-8 -z-10 size-40 rounded-3xl"/></Reveal>
-    <Reveal direction="left"><SectionTitle eyebrow="درباره خانه وکیل" title={<>حقوق را روشن،<br/><span className="text-gold-500">انسانی و قابل تصمیم</span> می‌کنیم</>} description="خانه وکیل با مدیریت علی کشاورز نجفی، فضایی برای دریافت مشاوره دقیق و پیگیری حرفه‌ای پرونده‌های حقوقی در قزوین است."/><div className="mt-7 grid gap-3 sm:grid-cols-2">{['ارزیابی واقع‌بینانه پرونده','قرارداد مالی شفاف','گزارش‌دهی منظم','رعایت اصول محرمانگی'].map(item=><span key={item} className="flex items-center gap-2 text-sm font-bold text-navy-900"><i className="grid size-6 place-items-center rounded-full bg-gold-500/15 text-gold-500"><Check size={14}/></i>{item}</span>)}</div><Button href="/about/" variant="outline" arrow className="mt-8">داستان و ارزش‌های ما</Button></Reveal>
-  </div></section>
+export function HomeSections() {
+  return <>
+    <Hero />
 
-  <section className="section-space bg-white"><div className="container-shell"><div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end"><SectionTitle eyebrow="حوزه‌های فعالیت" title={<>راهکار تخصصی برای<br/><span className="text-gold-500">هر مسئله حقوقی</span></>} description="از یک مشاوره کوتاه تا پیگیری کامل پرونده، خدمت متناسب با نیاز شما تعریف می‌شود."/><Link href="/services/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">همه خدمات <ArrowLeft size={17}/></Link></div><div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{services.map((service,index)=><Reveal key={service.slug} delay={index*.06}><ServiceCard service={service} index={index}/></Reveal>)}</div></div></section>
+    {/* آمار */}
+    <section id="stats" className="relative z-20 -mt-8">
+      <div className="container-shell">
+        <Reveal>
+          <div className="grid overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-soft sm:grid-cols-2 lg:grid-cols-4">
+            {QUICK_FACTS.map((fact, index) => (
+              <div key={fact.label} className="relative p-6 text-center lg:p-8">
+                {index > 0 && <i className="absolute right-0 top-1/4 hidden h-1/2 w-px bg-gradient-to-b from-transparent via-gray-200 to-transparent lg:block" />}
+                <strong className="block text-3xl font-black text-navy-900 lg:text-4xl"><CountUp end={fact.value} suffix={fact.suffix} /></strong>
+                <span className="mt-2 block text-xs text-gray-500">{fact.label}</span>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </div>
+    </section>
 
-  <section className="section-space overflow-hidden bg-navy-950 text-white"><div className="container-shell grid items-center gap-14 lg:grid-cols-[.92fr_1.08fr]">
-    <Reveal direction="right" className="relative"><div className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-[2rem] border border-white/10"><Image src="/images/lawyers/manager-portrait.jpg" alt="تصویر پیشنهادی مدیر مؤسسه؛ نیازمند جایگزینی با پرتره رسمی" fill sizes="(max-width:1024px) 100vw,40vw" className="object-cover object-top"/><div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-transparent to-transparent"/><span className="absolute bottom-4 right-4 rounded-xl bg-navy-950/80 px-3 py-2 text-[9px] text-white/60 backdrop-blur">تصویر پیشنهادی — جایگزین با تصویر رسمی</span></div><div className="absolute -left-3 bottom-20 rounded-2xl bg-gold-500 p-4 text-navy-950 shadow-gold"><Award size={22}/><b className="mt-2 block text-xs">مدیریت مؤسسه</b></div></Reveal>
-    <Reveal direction="left"><span className="mb-5 inline-flex rounded-full border border-gold-500/25 bg-gold-500/10 px-4 py-2 text-xs font-bold text-gold-400">وکیل پایه یک دادگستری</span><h2 className="text-4xl font-black leading-[1.4] lg:text-5xl">علی کشاورز نجفی</h2><p className="mt-3 text-sm font-bold text-gold-400">عضو کانون وکلای قزوین</p><p className="mt-7 max-w-2xl leading-[2.1] text-white/60">باور ما این است که وکالت پیش از هر چیز، مسئولیت فهم دقیق مسئله و گفتن حقیقت به موکل است. در هر پرونده، تلاش می‌کنیم گزینه‌ها، ریسک‌ها و هزینه‌ها پیش از شروع مسیر روشن باشند.</p><div className="mt-7 grid gap-3 sm:grid-cols-2">{['تجربه در دعاوی حقوقی و تجاری','تمرکز بر قراردادها و املاک','مشاوره راهبردی کسب‌وکار','پیگیری منظم و مستندسازی'].map(item=><span key={item} className="flex items-center gap-2 text-sm text-white/75"><BadgeCheck size={17} className="text-gold-500"/>{item}</span>)}</div><div className="mt-9 flex flex-wrap gap-3"><Button href="/lawyers/ali-keshavarz-najafi/" variant="light">پروفایل کامل</Button><Button href="/consultation/">رزرو مشاوره</Button></div></Reveal>
-  </div></section>
+    {/* معرفی */}
+    <section className="section-space overflow-hidden">
+      <div className="container-shell grid items-center gap-14 lg:grid-cols-2">
+        <Reveal direction="right" className="relative">
+          <div className="relative mr-4 aspect-[5/4] overflow-hidden rounded-[2rem] bg-coffee-900">
+            <Image src="/images/cafe/coffee-and-case.jpg" alt="قهوه و پرونده روی میز کافه وکلا" fill sizes="(max-width:1024px) 100vw,50vw" className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-coffee-950/60 to-transparent" />
+          </div>
+          <div className="absolute -bottom-6 right-0 rounded-2xl border border-white bg-white p-5 shadow-soft">
+            <strong className="block text-2xl font-black text-navy-900">۱۴ ساعت</strong>
+            <span className="text-[11px] text-gray-500">باز، هر روز هفته</span>
+          </div>
+          <div className="legal-pattern absolute -left-8 -top-8 -z-10 size-40 rounded-3xl" />
+        </Reveal>
+        <Reveal direction="left">
+          <SectionTitle
+            eyebrow="خانه وکلا چیست؟"
+            title={<>نه دفتر، نه کافه؛<br /><span className="text-gold-500">خانهٔ حرفه‌ای وکلا</span></>}
+            description="جایی که وکیل بعد از جلسه دادگاه می‌نشیند، قهوه‌اش را می‌نوشد، با همکارش درباره یک استدلال بحث می‌کند و یک ساعت بعد، در اتاق مجاور با موکلش جلسه رسمی دارد."
+          />
+          <div className="mt-7 grid gap-3 sm:grid-cols-2">
+            {['کافه و سالن گفت‌وگو', 'شش اتاق مشاوره مجهز', 'کتابخانه و سالن مطالعه', 'سالن نشست‌های علمی'].map((item) => (
+              <span key={item} className="flex items-center gap-2 text-sm font-bold text-navy-900">
+                <i className="grid size-6 place-items-center rounded-full bg-gold-500/15 text-gold-500"><Sparkles size={13} /></i>{item}
+              </span>
+            ))}
+          </div>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button href="/about/" variant="outline" arrow>داستان خانه وکلا</Button>
+            <Button href="/membership/#plans">عضویت</Button>
+          </div>
+        </Reveal>
+      </div>
+    </section>
 
-  <section className="section-space"><div className="container-shell"><SectionTitle eyebrow="چرا خانه وکیل؟" title={<>تفاوت در جزئیاتی است که<br/><span className="text-gold-500">اعتماد می‌سازند</span></>} align="center"/><div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{why.map(([Icon,title,text],index)=>{const I=Icon as typeof Scale;return <Reveal key={title as string} delay={index*.05}><article className="group flex gap-4 rounded-3xl border border-gray-100 bg-white p-6 transition hover:-translate-y-1 hover:border-gold-500/40 hover:shadow-soft"><span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-navy-900 text-gold-500 transition group-hover:bg-gold-500 group-hover:text-navy-950"><I size={24}/></span><div><h3 className="font-black text-navy-900">{title as string}</h3><p className="mt-2 text-xs leading-7 text-gray-500">{text as string}</p></div></article></Reveal>})}</div></div></section>
+    {/* امکانات */}
+    <section className="section-space bg-white">
+      <div className="container-shell">
+        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <SectionTitle eyebrow="امکانات خانه" title={<>هرچه یک وکیل<br /><span className="text-gold-500">به آن نیاز دارد</span></>} description="از یک فنجان قهوه تا اتاق داوری هشت‌نفره؛ همه زیر یک سقف." />
+          <Link href="/services/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">همه امکانات <ArrowLeft size={16} /></Link>
+        </div>
+        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {services.map((service, index) => <Reveal key={service.slug} delay={index * .05}><ServiceCard service={service} index={index} /></Reveal>)}
+        </div>
+      </div>
+    </section>
 
-  <section className="section-space persian-pattern overflow-hidden text-white"><div className="container-shell"><SectionTitle eyebrow="مسیر همکاری" title={<>از مسئله تا راه‌حل،<br/><span className="text-gold-400">گام‌به‌گام کنار شما</span></>} light align="center"/><div className="relative mt-16 grid gap-7 md:grid-cols-5"><i className="absolute right-[10%] top-9 hidden w-[80%] border-t border-dashed border-gold-500/35 md:block"/>{journey.map(([number,title,text],index)=><Reveal key={number} delay={index*.08} className="relative text-center"><span className="relative z-10 mx-auto grid size-[72px] place-items-center rounded-full border-[7px] border-navy-950 bg-navy-800 text-lg font-black text-gold-400 shadow-[0_0_0_1px_rgba(212,175,55,.35),0_0_35px_rgba(212,175,55,.12)] transition hover:scale-110">{number}</span><h3 className="mt-5 text-sm font-black">{title}</h3><p className="mt-2 text-[11px] leading-6 text-white/45">{text}</p></Reveal>)}</div></div></section>
+    {/* اتاق‌های مشاوره + تعرفه */}
+    <section className="section-space bg-navy-950 text-white">
+      <div className="container-shell">
+        <div className="grid items-end gap-8 lg:grid-cols-[1.2fr_.8fr]">
+          <SectionTitle light eyebrow="اتاق‌های مشاوره" title={<>دفتر فیزیکی ندارید؟<br /><span className="gold-text">اینجا دفتر شماست</span></>} description="اتاق‌های عایق صدا با پذیرایی و پذیرش حرفه‌ای؛ موکل شما وارد یک فضای شایسته می‌شود، نه یک کافی‌شاپ شلوغ." />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-gold-500/30 bg-gold-500/10 p-5">
+              <span className="text-[11px] text-white/60">اعضای خانه وکلا</span>
+              <strong className="mt-2 block text-2xl font-black text-gold-300">{ROOM_RATE.memberPrice}</strong>
+              <small className="mt-1 block text-[10px] leading-5 text-white/45">{ROOM_RATE.memberNote}</small>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <span className="text-[11px] text-white/60">وکلای غیرعضو</span>
+              <strong className="mt-2 block text-2xl font-black text-white">{ROOM_RATE.guestPrice}</strong>
+              <small className="mt-1 block text-[10px] leading-5 text-white/45">{ROOM_RATE.unit} · {ROOM_RATE.guestNote}</small>
+            </div>
+          </div>
+        </div>
+        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {rooms.slice(0, 3).map((room, index) => <Reveal key={room.slug} delay={index * .06}><RoomCard room={room} /></Reveal>)}
+        </div>
+        <div className="mt-10 text-center"><Button href="/rooms/" variant="light" arrow>مشاهده همه فضاها و رزرو</Button></div>
+      </div>
+    </section>
 
-  <section className="section-space bg-white"><div className="container-shell"><div className="flex items-end justify-between"><SectionTitle eyebrow="تیم حرفه‌ای" title={<>تخصص‌های مکمل،<br/><span className="text-gold-500">یک استاندارد مشترک</span></>}/><Link href="/lawyers/" className="hidden items-center gap-2 text-sm font-black hover:text-gold-500 sm:flex">مشاهده تیم <ArrowLeft size={17}/></Link></div><div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{lawyers.slice(0,3).map((lawyer,index)=><Reveal key={lawyer.slug} delay={index*.07}><LawyerCard lawyer={lawyer}/></Reveal>)}</div></div></section>
+    {/* چرا خانه وکلا */}
+    <section className="section-space">
+      <div className="container-shell">
+        <SectionTitle align="center" eyebrow="چرا اینجا؟" title={<>وکالت، کار تنهایی نیست</>} description="خانه وکلا برای این ساخته شد که دانش، تجربه و فضای حرفه‌ای میان وکلا به اشتراک گذاشته شود." />
+        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {why.map(([Icon, title, text], index) => {
+            const I = Icon as typeof Coffee;
+            return <Reveal key={title as string} delay={index * .05}>
+              <article className="h-full rounded-3xl border border-gray-100 bg-white p-7 transition duration-500 hover:-translate-y-2 hover:shadow-soft">
+                <span className="grid size-12 place-items-center rounded-2xl bg-coffee-100 text-coffee-700"><I size={23} /></span>
+                <h3 className="mt-5 font-black text-navy-900">{title as string}</h3>
+                <p className="mt-2 text-xs leading-7 text-gray-500">{text as string}</p>
+              </article>
+            </Reveal>;
+          })}
+        </div>
+      </div>
+    </section>
 
-  <section className="section-space"><div className="container-shell"><SectionTitle eyebrow="شیوه‌های مشاوره" title={<>مسیر مناسب خود را<br/><span className="text-gold-500">برای گفت‌وگو انتخاب کنید</span></>} description="حضوری، تلفنی یا آنلاین؛ کیفیت بررسی و محرمانگی در هر سه شیوه یکسان است." align="center"/><div className="mt-12"><ConsultationCards/></div></div></section>
+    {/* پلن‌های عضویت */}
+    <section className="section-space bg-white">
+      <div className="container-shell">
+        <SectionTitle align="center" eyebrow="عضویت" title={<>عضو شوید،<br /><span className="text-gold-500">خانه را خانهٔ خود کنید</span></>} description="سه سطح عضویت متناسب با مسیر حرفه‌ای شما؛ از کارآموزی تا دفتر مجازی کامل." />
+        <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
+          {plans.map((plan, index) => <Reveal key={plan.slug} delay={index * .07}><PlanCard plan={plan} /></Reveal>)}
+        </div>
+        <p className="mt-8 text-center text-xs text-gray-400">امکان پرداخت سه‌ماهه و سالانه با تخفیف · عضویت پس از احراز پروانه وکالت فعال می‌شود.</p>
+      </div>
+    </section>
 
-  <section id="booking" className="section-space bg-[#F0F1F4]"><div className="container-shell"><SectionTitle eyebrow="رزرو آنلاین" title={<>زمان مناسب را همین حالا<br/><span className="text-gold-500">در تقویم انتخاب کنید</span></>} description="روز و ساعت آزاد را انتخاب کنید؛ پس از ثبت، هماهنگی نهایی از طرف مؤسسه انجام می‌شود."/><div className="mt-10"><BookingWidget/></div></div></section>
+    {/* رویدادها */}
+    <section className="section-space bg-ivory">
+      <div className="container-shell">
+        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <SectionTitle eyebrow="تقویم علمی" title={<>هر هفته یک بهانه<br /><span className="text-gold-500">برای یاد گرفتن</span></>} description="نشست تحلیل آرا، کارگاه مهارتی و میزگرد تخصصی؛ رایگان برای اعضا." />
+          <Link href="/events/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">تقویم کامل <ArrowLeft size={16} /></Link>
+        </div>
+        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {events.map((event, index) => <Reveal key={event.slug} delay={index * .05}><EventCard event={event} /></Reveal>)}
+        </div>
+      </div>
+    </section>
 
-  <section className="section-space"><div className="container-shell grid gap-12 lg:grid-cols-[.8fr_1.2fr]"><div><SectionTitle eyebrow="پاسخ روشن" title={<>پرسش‌های<br/><span className="text-gold-500">پرتکرار شما</span></>} description="پاسخ‌های کوتاه برای شروع؛ جزئیات هر موضوع در جلسه مشاوره و با توجه به مدارک بررسی می‌شود."/><Button href="/faq/" variant="outline" arrow className="mt-7">همه پرسش‌ها</Button></div><FaqAccordion items={faqs.slice(0,6)}/></div></section>
+    {/* امکانات جانبی نواری */}
+    <section className="bg-coffee-900 py-14 text-white">
+      <div className="container-shell grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {amenities.map(([Icon, label]) => {
+          const I = Icon as typeof Wifi;
+          return <span key={label as string} className="flex items-center gap-3 text-sm text-white/75">
+            <i className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/5 text-gold-400"><I size={19} /></i>{label as string}
+          </span>;
+        })}
+      </div>
+    </section>
 
-  <section className="section-space bg-white"><div className="container-shell"><div className="flex items-end justify-between"><SectionTitle eyebrow="دانش‌نامه حقوقی" title={<>دانستن قانون، آغاز یک<br/><span className="text-gold-500">تصمیم بهتر است</span></>}/><Link href="/articles/" className="hidden items-center gap-2 text-sm font-black hover:text-gold-500 sm:flex">همه مقالات <ArrowLeft size={17}/></Link></div><div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{articles.slice(0,3).map((article,index)=><Reveal key={article.slug} delay={index*.06}><ArticleCard article={article} index={index}/></Reveal>)}</div></div></section>
+    {/* وکلای عضو */}
+    <section className="section-space">
+      <div className="container-shell">
+        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <SectionTitle eyebrow="اعضای خانه" title={<>وکلایی که اینجا<br /><span className="text-gold-500">قهوه می‌نوشند</span></>} description="مراجعان می‌توانند بر اساس تخصص، وکیل عضو مناسب پرونده خود را انتخاب کنند." />
+          <Link href="/lawyers/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">فهرست اعضا <ArrowLeft size={16} /></Link>
+        </div>
+        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {lawyers.slice(0, 3).map((lawyer, index) => <Reveal key={lawyer.slug} delay={index * .06}><LawyerCard lawyer={lawyer} /></Reveal>)}
+        </div>
+      </div>
+    </section>
 
-  <section className="section-space"><div className="container-shell"><SectionTitle eyebrow="تجربه موکلان" title={<>اعتماد، در عمل<br/><span className="text-gold-500">معنا پیدا می‌کند</span></>} align="center"/><div className="mt-12"><TestimonialSlider/></div><p className="mt-5 text-center text-[10px] text-gray-400">اسامی برای حفظ محرمانگی خلاصه شده‌اند. نتایج پرونده‌ها قابل تعمیم نیستند.</p></div></section>
+    {/* تجربه اعضا */}
+    <section className="section-space bg-white">
+      <div className="container-shell">
+        <SectionTitle align="center" eyebrow="روایت اعضا" title="اینجا چه می‌گذرد؟" />
+        <div className="mt-12"><TestimonialSlider /></div>
+      </div>
+    </section>
 
-  <section className="overflow-hidden bg-navy-950 py-16 text-white lg:py-20"><div className="container-shell relative text-center"><div className="absolute -right-20 -top-20 size-64 rounded-full bg-gold-500/10 blur-[80px]"/><div className="absolute -bottom-24 -left-20 size-64 rounded-full bg-gold-500/10 blur-[80px]"/><Sparkles className="mx-auto text-gold-500"/><h2 className="mx-auto mt-5 max-w-3xl text-3xl font-black leading-[1.5] lg:text-5xl">برای یک تصمیم حقوقی روشن،<br/><span className="gold-text">از یک گفت‌وگوی دقیق شروع کنید.</span></h2><p className="mt-5 text-sm text-white/50">شنبه تا پنجشنبه، از ساعت ۹ تا ۱۹ پاسخ‌گوی شما هستیم.</p><div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row"><Button href={SITE.phoneHref} variant="light"><Phone size={17}/>تماس با مؤسسه</Button><Button href={SITE.whatsappHref}><MessageCircle size={17}/>پیام در واتساپ</Button></div></div></section>
+    {/* دانش‌نامه */}
+    <section className="section-space bg-ivory">
+      <div className="container-shell">
+        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <SectionTitle eyebrow="دانش‌نامه" title={<>نوشته‌های اعضای<br /><span className="text-gold-500">خانه وکلا</span></>} />
+          <Link href="/articles/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">همه مقالات <ArrowLeft size={16} /></Link>
+        </div>
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {articles.slice(0, 3).map((article, index) => <Reveal key={article.slug} delay={index * .06}><ArticleCard article={article} index={index} /></Reveal>)}
+        </div>
+      </div>
+    </section>
 
-  <section className="section-space bg-white"><div className="container-shell"><SectionTitle eyebrow="ارتباط با ما" title={<>خانه وکیل،<br/><span className="text-gold-500">در دسترس شما</span></>}/><div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{[[MapPin,'نشانی',SITE.shortAddress,'/contact/'],[Phone,'تلفن',SITE.phone,SITE.phoneHref],[MessageCircle,'واتساپ',SITE.mobile,SITE.whatsappHref],[Mail,'ایمیل',SITE.email,`mailto:${SITE.email}`]].map(([Icon,title,value,href])=>{const I=Icon as typeof MapPin;return <a key={title as string} href={href as string} className="group rounded-2xl border border-gray-100 p-5 transition hover:border-gold-500 hover:shadow-soft"><I className="text-gold-500" size={21}/><b className="mt-4 block text-sm text-navy-900">{title as string}</b><span className="mt-1 block text-xs text-gray-500" dir={(title==='تلفن'||title==='واتساپ')?'ltr':undefined}>{value as string}</span></a>})}</div><div className="mt-5 h-72 overflow-hidden rounded-3xl border border-gray-100 bg-gray-100"><iframe title="نقشه موقعیت خانه وکیل در قزوین" src="https://www.openstreetmap.org/export/embed.html?bbox=50.0000%2C36.2400%2C50.0300%2C36.2900&amp;layer=mapnik" className="h-full w-full border-0" loading="lazy"/></div></div></section>
-</>}
+    {/* پرسش‌ها */}
+    <section className="section-space">
+      <div className="container-shell grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
+        <SectionTitle eyebrow="پرسش‌های پرتکرار" title={<>هرچه درباره خانه وکلا<br /><span className="text-gold-500">باید بدانید</span></>} description="پاسخ کوتاه به رایج‌ترین پرسش‌های وکلا و مراجعان درباره عضویت، اتاق‌ها و رویدادها." />
+        <FaqAccordion items={faqs.slice(0, 6)} />
+      </div>
+    </section>
+
+    {/* CTA */}
+    <section className="relative overflow-hidden bg-navy-950 py-20 text-white">
+      <div className="persian-pattern absolute inset-0 opacity-30" />
+      <div className="container-shell relative grid items-center gap-10 lg:grid-cols-[1.3fr_.7fr]">
+        <div>
+          <span className="eyebrow mb-4">یک قهوه مهمان ما باشید</span>
+          <h2 className="display-title">پیش از عضویت، یک بار بیایید و بنشینید</h2>
+          <p className="mt-5 max-w-xl leading-[2] text-white/60">
+            فضا را ببینید، با اعضا گفت‌وگو کنید و اتاق‌ها را از نزدیک بررسی کنید. اولین قهوه مهمان خانه وکلا است.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button href="/membership/#join">رزرو بازدید و عضویت</Button>
+            <Button href={SITE.whatsappHref} variant="light" >گفت‌وگو در واتساپ</Button>
+          </div>
+        </div>
+        <div className="space-y-3 text-sm">
+          <a href={SITE.phoneHref} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-gold-500/50"><Phone className="text-gold-500" size={18} /><span dir="ltr">{SITE.phone}</span></a>
+          <span className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"><MapPin className="shrink-0 text-gold-500" size={18} />{SITE.address}</span>
+          <span className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"><MessageCircle className="shrink-0 text-gold-500" size={18} />{SITE.workHours}</span>
+        </div>
+      </div>
+    </section>
+  </>;
+}
