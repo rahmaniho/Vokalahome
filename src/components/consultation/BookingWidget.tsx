@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from 'react';
 import { CalendarCheck2, ChevronLeft, ChevronRight, Clock3, Loader2, ShieldCheck } from 'lucide-react';
 import { jalaaliMonthLength, toGregorian, toJalaali } from 'jalaali-js';
 import { CONSULTATION_TYPES, SITE } from '@/lib/constants';
+import { rooms } from '@/lib/data/rooms';
 import { holidays, weeklyHolidays } from '@/lib/data/holidays';
 import { generateTrackingCode, toFa } from '@/lib/utils';
 
@@ -20,7 +21,7 @@ export function BookingWidget({ compact = false }: { compact?: boolean }) {
   const [view,setView] = useState({ jy:today.jy, jm:today.jm });
   const [selected,setSelected] = useState<Selected | null>(null);
   const [slot,setSlot] = useState('');
-  const [type,setType] = useState('phone');
+  const [type,setType] = useState('member-room');
   const [loading,setLoading] = useState(false);
   const [tracking,setTracking] = useState('');
 
@@ -51,8 +52,8 @@ export function BookingWidget({ compact = false }: { compact?: boolean }) {
   const slots = useMemo(() => {
     if(!selected) return [];
     const output:string[]=[];
-    for(let h=9;h<19;h++) for(const m of [0,30]) {
-      if(h===13) continue;
+    for(let h=8;h<22;h++) for(const m of [0,30]) {
+      if(h===13) continue; // بازه استراحت پذیرش
       if((h*2+(m?1:0)+selected.jd)%11===0) continue;
       const g=toGregorian(selected.jy,selected.jm,selected.jd);
       const isToday=g.gy===now.getFullYear()&&g.gm===now.getMonth()+1&&g.gd===now.getDate();
@@ -69,13 +70,13 @@ export function BookingWidget({ compact = false }: { compact?: boolean }) {
     const code=generateTrackingCode(); form.set('jalaliDate',selected.key); form.set('timeSlot',slot); form.set('consultationType',type); form.set('trackingCode',code);
     try {
       if(!SITE.formspreeEndpoint.includes('YOUR_FORM_ID')) await fetch(SITE.formspreeEndpoint,{method:'POST',body:form,headers:{Accept:'application/json'}});
-      const old=JSON.parse(localStorage.getItem('khv-bookings')||'[]');
-      localStorage.setItem('khv-bookings',JSON.stringify([...old,{date:selected.key,time:slot,type,code,createdAt:new Date().toISOString()}]));
+      const old=JSON.parse(localStorage.getItem('vokalahome-bookings')||'[]');
+      localStorage.setItem('vokalahome-bookings',JSON.stringify([...old,{date:selected.key,time:slot,type,code,createdAt:new Date().toISOString()}]));
       setTracking(code);
     } finally { setLoading(false); }
   }
 
-  if(tracking) return <div className="grid min-h-[480px] place-items-center rounded-[2rem] bg-white p-8 text-center shadow-soft"><div><span className="mx-auto grid size-20 place-items-center rounded-full bg-emerald-50 text-emerald-600"><CalendarCheck2 size={36}/></span><h3 className="mt-6 text-2xl font-black text-navy-900">درخواست شما ثبت شد</h3><p className="mt-3 text-sm leading-7 text-gray-500">برای نهایی‌شدن زمان جلسه، همکاران ما با شما تماس می‌گیرند.</p><div className="mt-6 rounded-2xl bg-navy-900 p-5 text-white"><small className="block text-white/50">کد پیگیری</small><strong className="mt-2 block font-mono text-3xl tracking-[.25em] text-gold-400" dir="ltr">{toFa(tracking)}</strong></div><button onClick={()=>{setTracking('');setSelected(null);setSlot('')}} className="mt-5 text-sm font-bold text-gold-500">ثبت درخواست دیگر</button></div></div>;
+  if(tracking) return <div className="grid min-h-[480px] place-items-center rounded-[2rem] bg-white p-8 text-center shadow-soft"><div><span className="mx-auto grid size-20 place-items-center rounded-full bg-emerald-50 text-emerald-600"><CalendarCheck2 size={36}/></span><h3 className="mt-6 text-2xl font-black text-navy-900">رزرو شما ثبت شد</h3><p className="mt-3 text-sm leading-7 text-gray-500">پذیرش خانه وکلا برای تأیید نهایی زمان و آماده‌سازی اتاق با شما تماس می‌گیرد.</p><div className="mt-6 rounded-2xl bg-navy-900 p-5 text-white"><small className="block text-white/50">کد پیگیری</small><strong className="mt-2 block font-mono text-3xl tracking-[.25em] text-gold-400" dir="ltr">{toFa(tracking)}</strong></div><button onClick={()=>{setTracking('');setSelected(null);setSlot('')}} className="mt-5 text-sm font-bold text-gold-500">رزرو جدید</button></div></div>;
 
   return <div className={`overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-soft ${compact?'':'lg:grid lg:grid-cols-[1.05fr_.95fr]'}`}>
     <div className="p-5 sm:p-7 lg:p-8">
@@ -84,6 +85,6 @@ export function BookingWidget({ compact = false }: { compact?: boolean }) {
       <div className="mt-5 flex flex-wrap gap-3 text-[9px] text-gray-500"><span className="flex items-center gap-1"><i className="size-2 rounded-full bg-emerald-500"/>آزاد</span><span className="flex items-center gap-1"><i className="size-2 rounded-full bg-red-400"/>تکمیل</span><span className="flex items-center gap-1"><i className="size-2 rounded-full bg-gray-300"/>تعطیل/گذشته</span><span className="flex items-center gap-1"><i className="size-2 rounded-full bg-blue-500"/>امروز</span></div>
       {selected && <div className="mt-6 border-t border-gray-100 pt-5"><div className="mb-3 flex items-center gap-2 text-xs font-black text-navy-900"><Clock3 size={16} className="text-gold-500"/>ساعت جلسه در {toFa(selected.key)}</div><div className="grid grid-cols-4 gap-2 sm:grid-cols-5">{slots.map(time=><button key={time} onClick={()=>setSlot(time)} className={`rounded-lg border px-2 py-2 text-[11px] font-bold ${slot===time?'border-gold-500 bg-gold-500 text-navy-950':'border-gray-100 text-gray-500 hover:border-gold-500'}`} dir="ltr">{toFa(time)}</button>)}</div></div>}
     </div>
-    {!compact && <form onSubmit={submit} className="bg-gray-50/80 p-5 sm:p-7 lg:p-8"><h3 className="text-lg font-black text-navy-900">اطلاعات درخواست</h3><p className="mt-1 text-xs text-gray-400">تمامی اطلاعات نزد مؤسسه محرمانه می‌ماند.</p><div className="mt-6 grid gap-4 sm:grid-cols-2"><label><span className="form-label">نام و نام خانوادگی *</span><input name="name" required className="form-control" placeholder="نام شما"/></label><label><span className="form-label">شماره همراه *</span><input name="phone" required inputMode="tel" dir="ltr" className="form-control text-right" placeholder="09xxxxxxxxx"/></label></div><div className="mt-4"><span className="form-label">نوع مشاوره</span><div className="grid grid-cols-3 gap-2">{CONSULTATION_TYPES.map(item=><button type="button" key={item.id} onClick={()=>setType(item.id)} className={`rounded-xl border p-2.5 text-[11px] font-bold ${type===item.id?'border-gold-500 bg-gold-500/10 text-navy-900':'border-gray-200 bg-white text-gray-500'}`}>{item.title.replace('مشاوره ','')}</button>)}</div></div><label className="mt-4 block"><span className="form-label">حوزه حقوقی</span><select name="service" className="form-control"><option>خانواده</option><option>کیفری</option><option>املاک و قراردادها</option><option>شرکت‌ها و تجارت</option><option>ثبتی و اداری</option></select></label><label className="mt-4 block"><span className="form-label">توضیح کوتاه</span><textarea name="description" rows={3} className="form-control resize-none" placeholder="موضوع را بدون درج اطلاعات بسیار حساس، کوتاه شرح دهید..."/></label><button disabled={!selected||!slot||loading} className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-navy-900 px-5 font-black text-white transition hover:bg-gold-500 hover:text-navy-950 disabled:cursor-not-allowed disabled:opacity-40">{loading?<Loader2 className="animate-spin" size={18}/>:<CalendarCheck2 size={18}/>} ثبت درخواست مشاوره</button><p className="mt-4 flex items-center justify-center gap-1.5 text-[9px] leading-5 text-gray-400"><ShieldCheck size={13}/>ثبت درخواست به معنی تأیید قطعی زمان نیست.</p></form>}
+    {!compact && <form onSubmit={submit} className="bg-gray-50/80 p-5 sm:p-7 lg:p-8"><h3 className="text-lg font-black text-navy-900">اطلاعات رزرو</h3><p className="mt-1 text-xs text-gray-400">اطلاعات شما نزد خانه وکلا محرمانه می‌ماند.</p><div className="mt-6 grid gap-4 sm:grid-cols-2"><label><span className="form-label">نام و نام خانوادگی *</span><input name="name" required className="form-control" placeholder="نام شما"/></label><label><span className="form-label">شماره همراه *</span><input name="phone" required inputMode="tel" dir="ltr" className="form-control text-right" placeholder="09xxxxxxxxx"/></label></div><div className="mt-4"><span className="form-label">نوع رزرو</span><div className="grid grid-cols-3 gap-2">{CONSULTATION_TYPES.map(item=><button type="button" key={item.id} onClick={()=>setType(item.id)} className={`rounded-xl border p-2.5 text-[11px] font-bold ${type===item.id?'border-gold-500 bg-gold-500/10 text-navy-900':'border-gray-200 bg-white text-gray-500'}`}>{item.title.replace('رزرو اتاق ','').replace('مشاوره حقوقی ','مشاوره ')}</button>)}</div></div><label className="mt-4 block"><span className="form-label">فضای موردنظر</span><select name="room" className="form-control">{rooms.map(room=><option key={room.slug}>{room.name}</option>)}</select></label><label className="mt-4 block"><span className="form-label">توضیح کوتاه</span><textarea name="description" rows={3} className="form-control resize-none" placeholder="تعداد مهمانان، نیاز به پذیرایی یا تجهیزات خاص را بنویسید..."/></label><button disabled={!selected||!slot||loading} className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-navy-900 px-5 font-black text-white transition hover:bg-gold-500 hover:text-navy-950 disabled:cursor-not-allowed disabled:opacity-40">{loading?<Loader2 className="animate-spin" size={18}/>:<CalendarCheck2 size={18}/>} ثبت رزرو</button><p className="mt-4 flex items-center justify-center gap-1.5 text-[9px] leading-5 text-gray-400"><ShieldCheck size={13}/>ثبت فرم رزرو اولیه است؛ تأیید نهایی پس از تماس پذیرش انجام می‌شود.</p></form>}
   </div>;
 }

@@ -3,14 +3,14 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CalendarDays, HelpCircle, Menu, MessageCircle, Phone, ArrowUp } from 'lucide-react';
+import { BadgeCheck, DoorOpen, Menu, MessageCircle, Phone, ArrowUp } from 'lucide-react';
 import { SITE } from '@/lib/constants';
 
 const items = [
   { label: 'واتساپ', href: SITE.whatsappHref, Icon: MessageCircle, color: 'bg-emerald-500' },
   { label: 'تماس فوری', href: SITE.phoneHref, Icon: Phone, color: 'bg-gold-500 text-navy-950' },
-  { label: 'رزرو مشاوره', href: '/consultation/', Icon: CalendarDays, color: 'bg-navy-800' },
-  { label: 'پرسش و پاسخ', href: '/faq/', Icon: HelpCircle, color: 'bg-navy-800' },
+  { label: 'رزرو اتاق مشاوره', href: '/rooms/#booking', Icon: DoorOpen, color: 'bg-navy-800' },
+  { label: 'عضویت در خانه', href: '/membership/#plans', Icon: BadgeCheck, color: 'bg-coffee-700' },
 ];
 
 export function FloatingMenu() {

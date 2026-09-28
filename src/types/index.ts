@@ -41,3 +41,43 @@ export type FAQItem = {
   answer: string;
   category: string;
 };
+
+export type MembershipPlan = {
+  slug: string;
+  name: string;
+  audience: string;
+  price: string;
+  priceNote: string;
+  period: string;
+  roomHours: string;
+  highlight?: boolean;
+  badge?: string;
+  features: string[];
+  excluded?: string[];
+};
+
+export type Room = {
+  slug: string;
+  name: string;
+  capacity: string;
+  area: string;
+  vibe: string;
+  description: string;
+  equipment: string[];
+  memberPrice: string;
+  guestPrice: string;
+  icon: string;
+};
+
+export type ClubEvent = {
+  slug: string;
+  title: string;
+  type: 'نشست علمی' | 'کارگاه' | 'میزگرد' | 'دورهمی';
+  date: string;
+  time: string;
+  speaker: string;
+  speakerRole: string;
+  seats: string;
+  fee: string;
+  summary: string;
+};

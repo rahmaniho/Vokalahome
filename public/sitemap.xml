@@ -4,6 +4,9 @@
   <url><loc>https://rahmaniho.github.io/Vokalahome/about/</loc><priority>0.8</priority></url>
   <url><loc>https://rahmaniho.github.io/Vokalahome/services/</loc><priority>0.9</priority></url>
   <url><loc>https://rahmaniho.github.io/Vokalahome/lawyers/</loc><priority>0.8</priority></url>
+  <url><loc>https://rahmaniho.github.io/Vokalahome/membership/</loc><priority>1.0</priority></url>
+  <url><loc>https://rahmaniho.github.io/Vokalahome/rooms/</loc><priority>1.0</priority></url>
+  <url><loc>https://rahmaniho.github.io/Vokalahome/events/</loc><priority>0.8</priority></url>
   <url><loc>https://rahmaniho.github.io/Vokalahome/consultation/</loc><priority>0.9</priority></url>
   <url><loc>https://rahmaniho.github.io/Vokalahome/contact/</loc><priority>0.7</priority></url>
   <url><loc>https://rahmaniho.github.io/Vokalahome/faq/</loc><priority>0.7</priority></url>
