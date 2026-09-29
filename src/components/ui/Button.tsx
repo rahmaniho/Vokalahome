@@ -15,12 +15,14 @@ type ButtonProps = {
   variant?: keyof typeof styles;
   className?: string;
   arrow?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
+  type?: 'button' | 'submit';
 };
 
-export function Button({ href, children, variant = 'gold', className, arrow = false }: ButtonProps) {
+export function Button({ href, children, variant = 'gold', className, arrow = false, onClick, ...rest }: ButtonProps) {
   const external = href.startsWith('http') || href.startsWith('tel:') || href.startsWith('mailto:');
   const content = <>{children}{arrow && <ArrowLeft size={17} strokeWidth={1.8} />}</>;
   const classes = cn('group relative inline-flex min-h-12 items-center justify-center gap-2 overflow-hidden rounded-xl px-6 py-3 text-sm font-extrabold transition duration-300', styles[variant], className);
-  if (external) return <a href={href} className={classes} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">{content}</a>;
-  return <Link href={href} className={classes}>{content}</Link>;
+  if (external) return <a href={href} onClick={onClick} className={classes} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" {...rest}>{content}</a>;
+  return <Link href={href} onClick={onClick} className={classes} {...rest}>{content}</Link>;
 }
