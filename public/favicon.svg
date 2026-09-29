@@ -1,1 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#0B132B"/><path d="M32 13v36M18 20h28M22 20l-8 15h16L22 20Zm20 0-8 15h16L42 20ZM23 50h18" fill="none" stroke="#D4AF37" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="نماد خانه وکلا">
+  <rect width="64" height="64" rx="16" fill="#0B1F3A"/>
+  <!-- سقف خانه -->
+  <path d="M10 27 32 12l22 15" fill="none" stroke="#C9A227" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- بدنه خانه / دیوارها -->
+  <path d="M15 25v24h34V25" fill="none" stroke="#C9A227" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- ترازوی عدالت به‌جای در ورودی -->
+  <path d="M32 27v20M24 34h16M24 34l-4.5 8.5a4.5 4.5 0 0 0 9 0L24 34Zm16 0-4.5 8.5a4.5 4.5 0 0 0 9 0L40 34Z" fill="none" stroke="#F5F6F8" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- بخار فنجان قهوه، نماد کافه -->
+  <path d="M27 15.5c0-2 2-2 2-3.7M35 15.5c0-2 2-2 2-3.7" fill="none" stroke="#C9A227" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>
+</svg>
