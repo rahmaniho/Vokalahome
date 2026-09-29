@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { asset } from '@/lib/basePath';
 import { Check, Coffee, Printer, ShieldCheck, Sparkles, UserCheck, Wifi } from 'lucide-react';
 import { PageHero } from '@/components/layout/PageHero';
 import { SectionTitle } from '@/components/ui/SectionTitle';
@@ -14,6 +15,7 @@ import { faqs } from '@/lib/data/faqs';
 import { ROOM_RATE } from '@/lib/constants';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/rooms/' },
   title: 'اتاق‌های مشاوره',
   description: 'اتاق‌های مشاوره خانه وکلا برای ملاقات با موکل؛ برای اعضا رایگان و برای وکلای غیرعضو ساعتی ۵۰۰ هزار تومان.',
 };
@@ -32,7 +34,7 @@ export default function RoomsPage() {
     <PageHero
       eyebrow="فضاهای حرفه‌ای"
       current="اتاق‌های مشاوره"
-      title={<>جلسه با موکل،<br /><span className="gold-text">در فضایی شایسته</span></>}
+      title={<>جلسه با موکل،<br /><span className="gold-text-on-dark">در فضایی شایسته</span></>}
       description="شش فضای متفاوت برای مشاوره خصوصی، داوری، جلسه آنلاین و نگارش لایحه. اگر دفتر فیزیکی ندارید، اینجا دفتر شماست."
     />
 
@@ -41,12 +43,12 @@ export default function RoomsPage() {
       <div className="container-shell grid items-center gap-12 lg:grid-cols-2">
         <Reveal direction="right">
           <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem]">
-            <Image src="/images/rooms/consultation-room.jpg" alt="اتاق مشاوره خانه وکلا" fill sizes="(max-width:1024px) 100vw,50vw" className="object-cover" />
+            <Image src={asset("/images/rooms/consultation-room.webp")} alt="اتاق مشاوره خانه وکلا" fill sizes="(max-width:1024px) 100vw,50vw" className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-navy-950/50 to-transparent" />
           </div>
         </Reveal>
         <Reveal direction="left">
-          <SectionTitle eyebrow="تعرفه شفاف" title={<>اعضا رایگان،<br /><span className="text-gold-500">مهمان‌ها ساعتی ۵۰۰ هزار تومان</span></>} description="بدون هزینه پنهان؛ تعرفه اعلام‌شده شامل تمام خدمات جانبی جلسه است." />
+          <SectionTitle eyebrow="تعرفه شفاف" title={<>اعضا رایگان،<br /><span className="text-[#96791D]">مهمان‌ها ساعتی ۵۰۰ هزار تومان</span></>} description="بدون هزینه پنهان؛ تعرفه اعلام‌شده شامل تمام خدمات جانبی جلسه است." />
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             <div className="rounded-3xl border-2 border-gold-500 bg-gold-500/5 p-6">
               <span className="text-xs font-bold text-gray-500">اعضای خانه وکلا</span>
@@ -103,7 +105,7 @@ export default function RoomsPage() {
     {/* تقویم رزرو */}
     <section id="booking" className="section-space bg-[#F0F1F4]">
       <div className="container-shell">
-        <SectionTitle eyebrow="تقویم رزرو" title={<>روز و ساعت اتاق را<br /><span className="text-gold-500">انتخاب کنید</span></>} description="بازه‌ها نیم‌ساعته‌اند و از ۸ صبح تا ۲۲ نمایش داده می‌شوند. تأیید نهایی پس از تماس پذیرش انجام می‌شود." />
+        <SectionTitle eyebrow="تقویم رزرو" title={<>روز و ساعت اتاق را<br /><span className="text-[#96791D]">انتخاب کنید</span></>} description="بازه‌ها نیم‌ساعته‌اند و از ۸ صبح تا ۲۲ نمایش داده می‌شوند. تأیید نهایی پس از تماس پذیرش انجام می‌شود." />
         <div className="mt-10"><BookingWidget /></div>
       </div>
     </section>

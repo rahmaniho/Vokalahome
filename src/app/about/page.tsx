@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { asset } from '@/lib/basePath';
 import { BadgeCheck, BookOpen, Coffee, Eye, HeartHandshake, Scale, ShieldCheck, Sparkles } from 'lucide-react';
 import { PageHero } from '@/components/layout/PageHero';
 import { SectionTitle } from '@/components/ui/SectionTitle';
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Reveal } from '@/components/animation/Reveal';
 import { SITE } from '@/lib/constants';
 
-export const metadata: Metadata = { title: 'درباره خانه وکلا', description: 'داستان، ارزش‌ها و فضای خانه وکلا؛ باشگاه تخصصی و کافه حقوقی وکلا در قزوین.' };
+export const metadata: Metadata = { alternates:{canonical:'/about/'}, title: 'درباره خانه وکلا', description: 'داستان، ارزش‌ها و فضای خانه وکلا؛ باشگاه تخصصی و کافه حقوقی وکلا در قزوین.' };
 
 const timeline = [
   ['۱۴۰۱', 'یک میز در گوشه کافه', 'چند وکیل هر پنجشنبه دور یک میز جمع می‌شدند تا پرونده‌ها و تجربه‌ها را مرور کنند.'],
@@ -30,7 +31,7 @@ export default function AboutPage() {
     <PageHero
       eyebrow="درباره ما"
       current="درباره خانه وکلا"
-      title={<>خانه‌ای که وکلا<br /><span className="gold-text">آن را ساختند</span></>}
+      title={<>خانه‌ای که وکلا<br /><span className="gold-text-on-dark">آن را ساختند</span></>}
       description="خانه وکلا از یک نیاز ساده متولد شد: وکیل به جایی نیاز دارد که هم بنشیند و فکر کند، هم با همکارانش گفت‌وگو کند و هم با موکلش جلسه‌ای شایسته داشته باشد."
     />
 
@@ -38,13 +39,13 @@ export default function AboutPage() {
       <div className="container-shell grid items-center gap-14 lg:grid-cols-2">
         <Reveal direction="right">
           <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem]">
-            <Image src="/images/hero/lawyers-cafe.jpg" alt="فضای کافه خانه وکلا" fill className="object-cover" sizes="(max-width:1024px) 100vw,50vw" />
+            <Image src={asset("/images/hero/lawyers-cafe.webp")} alt="فضای کافه خانه وکلا" fill className="object-cover" sizes="(max-width:1024px) 100vw,50vw" />
             <div className="absolute inset-0 bg-gradient-to-t from-navy-950/60 to-transparent" />
             <span className="absolute bottom-5 right-5 rounded-xl bg-white/90 px-4 py-2 text-xs font-bold text-navy-900">{SITE.shortAddress}</span>
           </div>
         </Reveal>
         <Reveal direction="left">
-          <SectionTitle eyebrow="داستان ما" title={<>وکالت، حرفه‌ای است که<br /><span className="text-gold-500">در گفت‌وگو پخته می‌شود</span></>} />
+          <SectionTitle eyebrow="داستان ما" title={<>وکالت، حرفه‌ای است که<br /><span className="text-[#96791D]">در گفت‌وگو پخته می‌شود</span></>} />
           <p className="mt-6 leading-[2.1] text-gray-600">
             بسیاری از وکلا، به‌ویژه در سال‌های نخست، بدون دفتر کار می‌کنند؛ جلسه با موکل در کافی‌شاپ شلوغ برگزار می‌شود و پرسش‌های حرفه‌ای بی‌پاسخ می‌ماند.
             خانه وکلا پاسخ همین وضعیت است: یک کافه تخصصی، شش اتاق مشاوره مجهز، کتابخانه‌ای به‌روز و تقویمی از نشست‌های علمی.
@@ -81,7 +82,7 @@ export default function AboutPage() {
 
     <section className="section-space">
       <div className="container-shell">
-        <SectionTitle align="center" eyebrow="قواعد خانه" title={<>ارزش‌هایی که این خانه<br /><span className="text-gold-500">بر آن‌ها بنا شده</span></>} />
+        <SectionTitle align="center" eyebrow="قواعد خانه" title={<>ارزش‌هایی که این خانه<br /><span className="text-[#96791D]">بر آن‌ها بنا شده</span></>} />
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {values.map(([Icon, title, text], i) => {
             const I = Icon as typeof Scale;
@@ -100,7 +101,7 @@ export default function AboutPage() {
     <section className="section-space bg-navy-950 text-white">
       <div className="container-shell grid items-center gap-14 lg:grid-cols-[.75fr_1.25fr]">
         <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
-          <Image src="/images/lawyers/manager-portrait.jpg" alt={`تصویر پیشنهادی ${SITE.manager}`} fill className="object-cover object-top" sizes="(max-width:1024px) 100vw,35vw" />
+          <Image src={asset("/images/lawyers/manager-portrait.webp")} alt={`تصویر پیشنهادی ${SITE.manager}`} fill className="object-cover object-top" sizes="(max-width:1024px) 100vw,35vw" />
           <span className="absolute bottom-4 right-4 rounded-lg bg-navy-950/80 px-3 py-2 text-[9px] text-white/60">تصویر پیشنهادی — نیازمند تأیید</span>
         </div>
         <div>

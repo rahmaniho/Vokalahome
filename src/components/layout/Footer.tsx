@@ -21,7 +21,7 @@ export function Footer() {
       <div>
         <h3 className="mb-5 text-sm font-black text-gold-400">خانه وکلا</h3>
         <ul className="space-y-3.5 text-sm text-white/60">
-          {[['درباره خانه', '/about/'], ['پلن‌های عضویت', '/membership/'], ['اتاق‌های مشاوره', '/rooms/'], ['تقویم رویدادها', '/events/'], ['وکلای عضو', '/lawyers/']].map(([l, h]) => (
+          {[['درباره خانه', '/about/'], ['پلن‌های عضویت', '/membership/'], ['اتاق‌های مشاوره', '/rooms/'], ['تقویم رویدادها', '/events/'], ['وکلای عضو', '/lawyers/'], ['گالری و تور مجازی', '/gallery/'], ['دانش‌نامه حقوقی', '/articles/']].map(([l, h]) => (
             <li key={h}><Link className="transition hover:pr-1 hover:text-white" href={h}>{l}</Link></li>
           ))}
         </ul>
@@ -43,9 +43,9 @@ export function Footer() {
       </div>
     </div>
     <div className="border-t border-white/10">
-      <div className="container-shell flex flex-col items-center justify-between gap-4 py-5 text-center text-[11px] text-white/40 sm:flex-row">
+      <div className="container-shell flex flex-col items-center justify-between gap-4 py-5 text-center text-[11px] text-white/60 sm:flex-row">
         <p>© ۱۴۰۵ خانه وکلا — تمامی حقوق محفوظ است.</p>
-        <div className="flex gap-5"><Link href="/privacy/">حریم خصوصی</Link><Link href="/terms/">قواعد خانه</Link><Link href="/disclaimer/">سلب مسئولیت</Link></div>
+        <div className="flex gap-5"><Link href="/privacy/">حریم خصوصی</Link><Link href="/terms/">قواعد خانه</Link><Link href="/disclaimer/">سلب مسئولیت</Link><a href={`${SITE.basePath}/rss.xml`}>RSS</a><Link href="/style-guide/">راهنمای سبک</Link></div>
       </div>
     </div>
   </footer>;

@@ -1,13 +1,15 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
+  darkMode: 'class',
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     extend: {
       colors: {
-        navy: { 950: '#070D1E', 900: '#0B132B', 800: '#1A2542', 700: '#253458' },
-        gold: { 500: '#D4AF37', 400: '#E5B650', 300: '#F0CD6F', 100: '#FBF3D2' },
-        ivory: '#F8F7F3',
+        // پالت رسمی برند خانه وکلا — سرمه‌ای/طلایی/خاکستری روشن (طبق راهنمای برند)
+        navy: { 950: '#060F1D', 900: '#0B1F3A', 800: '#16294A', 700: '#1F3560' },
+        gold: { 500: '#C9A227', 400: '#D3B14A', 300: '#E2C87A', 100: '#F6EACA' },
+        ivory: '#F5F6F8',
         coffee: { 950: '#1B100A', 900: '#2B1A12', 700: '#4A2E1E', 500: '#7B4B2A', 300: '#C08B5C', 100: '#F1E4D6' },
         cream: '#FBF6EF',
       },

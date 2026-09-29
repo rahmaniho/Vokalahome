@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { asset } from '@/lib/basePath';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronDown, Coffee, DoorOpen, Scale, Sparkles, Users } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -13,7 +14,7 @@ export function Hero() {
   const y = useTransform(scrollY, [0, 800], [0, 110]);
   return <section className="noise relative flex min-h-[860px] items-center overflow-hidden bg-coffee-950 pb-24 pt-36 text-white lg:min-h-screen lg:pt-44">
     <motion.div className="absolute inset-0" style={{ y }}>
-      <Image src="/images/hero/lawyers-cafe.jpg" alt="فضای کافه و باشگاه وکلا" fill priority sizes="100vw" className="object-cover object-center opacity-60" />
+      <Image src={asset("/images/hero/lawyers-cafe.webp")} alt="فضای کافه و باشگاه وکلا" fill priority sizes="100vw" className="object-cover object-center opacity-60" />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(27,16,10,.25),rgba(11,19,43,.82)_55%,rgba(7,13,30,.97))]" />
       <div className="hero-grid absolute inset-0" />
     </motion.div>
@@ -29,7 +30,7 @@ export function Hero() {
 
         <h1 className="max-w-[860px] text-4xl font-black leading-[1.5] tracking-[-.05em] sm:text-5xl lg:text-[4.1rem] lg:leading-[1.33]">
           {words.map((word, index) => (
-            <motion.span key={word + index} className={`ml-[.25em] inline-block ${index === 3 || index === 6 ? 'gold-text' : ''}`} initial={{ opacity: 0, y: 35, filter: 'blur(8px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0)' }} transition={{ duration: .65, delay: .35 + index * .085, ease: [.22, 1, .36, 1] }}>{word}</motion.span>
+            <motion.span key={word + index} className={`ml-[.25em] inline-block ${index === 3 || index === 6 ? 'gold-text-on-dark' : ''}`} initial={{ opacity: 0, y: 35, filter: 'blur(8px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0)' }} transition={{ duration: .65, delay: .35 + index * .085, ease: [.22, 1, .36, 1] }}>{word}</motion.span>
           ))}
         </h1>
 

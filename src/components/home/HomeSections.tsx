@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { asset } from '@/lib/basePath';
 import Link from 'next/link';
 import {
   ArrowLeft, BadgeCheck, BookOpenCheck, Coffee, DoorOpen, Handshake, Landmark, Lightbulb,
@@ -70,7 +71,7 @@ export function HomeSections() {
       <div className="container-shell grid items-center gap-14 lg:grid-cols-2">
         <Reveal direction="right" className="relative">
           <div className="relative mr-4 aspect-[5/4] overflow-hidden rounded-[2rem] bg-coffee-900">
-            <Image src="/images/cafe/coffee-and-case.jpg" alt="قهوه و پرونده روی میز کافه وکلا" fill sizes="(max-width:1024px) 100vw,50vw" className="object-cover" />
+            <Image src={asset("/images/cafe/coffee-and-case.webp")} alt="قهوه و پرونده روی میز کافه وکلا" fill sizes="(max-width:1024px) 100vw,50vw" className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-coffee-950/60 to-transparent" />
           </div>
           <div className="absolute -bottom-6 right-0 rounded-2xl border border-white bg-white p-5 shadow-soft">
@@ -82,7 +83,7 @@ export function HomeSections() {
         <Reveal direction="left">
           <SectionTitle
             eyebrow="خانه وکلا چیست؟"
-            title={<>نه دفتر، نه کافه؛<br /><span className="text-gold-500">خانهٔ حرفه‌ای وکلا</span></>}
+            title={<>نه دفتر، نه کافه؛<br /><span className="text-[#96791D]">خانهٔ حرفه‌ای وکلا</span></>}
             description="جایی که وکیل بعد از جلسه دادگاه می‌نشیند، قهوه‌اش را می‌نوشد، با همکارش درباره یک استدلال بحث می‌کند و یک ساعت بعد، در اتاق مجاور با موکلش جلسه رسمی دارد."
           />
           <div className="mt-7 grid gap-3 sm:grid-cols-2">
@@ -104,7 +105,7 @@ export function HomeSections() {
     <section className="section-space bg-white">
       <div className="container-shell">
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <SectionTitle eyebrow="امکانات خانه" title={<>هرچه یک وکیل<br /><span className="text-gold-500">به آن نیاز دارد</span></>} description="از یک فنجان قهوه تا اتاق داوری هشت‌نفره؛ همه زیر یک سقف." />
+          <SectionTitle eyebrow="امکانات خانه" title={<>هرچه یک وکیل<br /><span className="text-[#96791D]">به آن نیاز دارد</span></>} description="از یک فنجان قهوه تا اتاق داوری هشت‌نفره؛ همه زیر یک سقف." />
           <Link href="/services/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">همه امکانات <ArrowLeft size={16} /></Link>
         </div>
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -117,17 +118,17 @@ export function HomeSections() {
     <section className="section-space bg-navy-950 text-white">
       <div className="container-shell">
         <div className="grid items-end gap-8 lg:grid-cols-[1.2fr_.8fr]">
-          <SectionTitle light eyebrow="اتاق‌های مشاوره" title={<>دفتر فیزیکی ندارید؟<br /><span className="gold-text">اینجا دفتر شماست</span></>} description="اتاق‌های عایق صدا با پذیرایی و پذیرش حرفه‌ای؛ موکل شما وارد یک فضای شایسته می‌شود، نه یک کافی‌شاپ شلوغ." />
+          <SectionTitle light eyebrow="اتاق‌های مشاوره" title={<>دفتر فیزیکی ندارید؟<br /><span className="gold-text-on-dark">اینجا دفتر شماست</span></>} description="اتاق‌های عایق صدا با پذیرایی و پذیرش حرفه‌ای؛ موکل شما وارد یک فضای شایسته می‌شود، نه یک کافی‌شاپ شلوغ." />
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-gold-500/30 bg-gold-500/10 p-5">
               <span className="text-[11px] text-white/60">اعضای خانه وکلا</span>
               <strong className="mt-2 block text-2xl font-black text-gold-300">{ROOM_RATE.memberPrice}</strong>
-              <small className="mt-1 block text-[10px] leading-5 text-white/45">{ROOM_RATE.memberNote}</small>
+              <small className="mt-1 block text-[10px] leading-5 text-white/60">{ROOM_RATE.memberNote}</small>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <span className="text-[11px] text-white/60">وکلای غیرعضو</span>
               <strong className="mt-2 block text-2xl font-black text-white">{ROOM_RATE.guestPrice}</strong>
-              <small className="mt-1 block text-[10px] leading-5 text-white/45">{ROOM_RATE.unit} · {ROOM_RATE.guestNote}</small>
+              <small className="mt-1 block text-[10px] leading-5 text-white/60">{ROOM_RATE.unit} · {ROOM_RATE.guestNote}</small>
             </div>
           </div>
         </div>
@@ -160,11 +161,11 @@ export function HomeSections() {
     {/* پلن‌های عضویت */}
     <section className="section-space bg-white">
       <div className="container-shell">
-        <SectionTitle align="center" eyebrow="عضویت" title={<>عضو شوید،<br /><span className="text-gold-500">خانه را خانهٔ خود کنید</span></>} description="سه سطح عضویت متناسب با مسیر حرفه‌ای شما؛ از کارآموزی تا دفتر مجازی کامل." />
+        <SectionTitle align="center" eyebrow="عضویت" title={<>عضو شوید،<br /><span className="text-[#96791D]">خانه را خانهٔ خود کنید</span></>} description="سه سطح عضویت متناسب با مسیر حرفه‌ای شما؛ از کارآموزی تا دفتر مجازی کامل." />
         <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
           {plans.map((plan, index) => <Reveal key={plan.slug} delay={index * .07}><PlanCard plan={plan} /></Reveal>)}
         </div>
-        <p className="mt-8 text-center text-xs text-gray-400">امکان پرداخت سه‌ماهه و سالانه با تخفیف · عضویت پس از احراز پروانه وکالت فعال می‌شود.</p>
+        <p className="mt-8 text-center text-xs text-gray-500">امکان پرداخت سه‌ماهه و سالانه با تخفیف · عضویت پس از احراز پروانه وکالت فعال می‌شود.</p>
       </div>
     </section>
 
@@ -172,7 +173,7 @@ export function HomeSections() {
     <section className="section-space bg-ivory">
       <div className="container-shell">
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <SectionTitle eyebrow="تقویم علمی" title={<>هر هفته یک بهانه<br /><span className="text-gold-500">برای یاد گرفتن</span></>} description="نشست تحلیل آرا، کارگاه مهارتی و میزگرد تخصصی؛ رایگان برای اعضا." />
+          <SectionTitle eyebrow="تقویم علمی" title={<>هر هفته یک بهانه<br /><span className="text-[#96791D]">برای یاد گرفتن</span></>} description="نشست تحلیل آرا، کارگاه مهارتی و میزگرد تخصصی؛ رایگان برای اعضا." />
           <Link href="/events/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">تقویم کامل <ArrowLeft size={16} /></Link>
         </div>
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -197,7 +198,7 @@ export function HomeSections() {
     <section className="section-space">
       <div className="container-shell">
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <SectionTitle eyebrow="اعضای خانه" title={<>وکلایی که اینجا<br /><span className="text-gold-500">قهوه می‌نوشند</span></>} description="مراجعان می‌توانند بر اساس تخصص، وکیل عضو مناسب پرونده خود را انتخاب کنند." />
+          <SectionTitle eyebrow="اعضای خانه" title={<>وکلایی که اینجا<br /><span className="text-[#96791D]">قهوه می‌نوشند</span></>} description="مراجعان می‌توانند بر اساس تخصص، وکیل عضو مناسب پرونده خود را انتخاب کنند." />
           <Link href="/lawyers/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">فهرست اعضا <ArrowLeft size={16} /></Link>
         </div>
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -218,7 +219,7 @@ export function HomeSections() {
     <section className="section-space bg-ivory">
       <div className="container-shell">
         <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <SectionTitle eyebrow="دانش‌نامه" title={<>نوشته‌های اعضای<br /><span className="text-gold-500">خانه وکلا</span></>} />
+          <SectionTitle eyebrow="دانش‌نامه" title={<>نوشته‌های اعضای<br /><span className="text-[#96791D]">خانه وکلا</span></>} />
           <Link href="/articles/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">همه مقالات <ArrowLeft size={16} /></Link>
         </div>
         <div className="mt-12 grid gap-5 md:grid-cols-3">
@@ -230,7 +231,7 @@ export function HomeSections() {
     {/* پرسش‌ها */}
     <section className="section-space">
       <div className="container-shell grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
-        <SectionTitle eyebrow="پرسش‌های پرتکرار" title={<>هرچه درباره خانه وکلا<br /><span className="text-gold-500">باید بدانید</span></>} description="پاسخ کوتاه به رایج‌ترین پرسش‌های وکلا و مراجعان درباره عضویت، اتاق‌ها و رویدادها." />
+        <SectionTitle eyebrow="پرسش‌های پرتکرار" title={<>هرچه درباره خانه وکلا<br /><span className="text-[#96791D]">باید بدانید</span></>} description="پاسخ کوتاه به رایج‌ترین پرسش‌های وکلا و مراجعان درباره عضویت، اتاق‌ها و رویدادها." />
         <FaqAccordion items={faqs.slice(0, 6)} />
       </div>
     </section>
