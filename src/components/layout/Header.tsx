@@ -9,6 +9,7 @@ import { NAV_ITEMS, SITE } from '@/lib/constants';
 import { services } from '@/lib/data/services';
 import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/Button';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export function Header() {
   const pathname = usePathname();
@@ -29,7 +30,7 @@ export function Header() {
 
   const light = home && !scrolled;
   return <>
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${scrolled ? 'bg-cream/90 shadow-[0_8px_32px_rgba(11,19,43,.07)] backdrop-blur-xl' : 'bg-transparent'}`}>
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${scrolled ? 'bg-cream/90 shadow-[0_8px_32px_rgba(11,19,43,.07)] backdrop-blur-xl dark:bg-navy-900/90' : 'bg-transparent'}`}>
       <div className={`hidden overflow-hidden border-b transition-all duration-500 lg:block ${scrolled ? 'max-h-0 border-transparent opacity-0' : 'max-h-10 border-white/10 opacity-100'}`}>
         <div className="container-shell flex h-10 items-center justify-between text-[11px] text-white/65">
           <div className="flex items-center gap-5">
@@ -65,13 +66,13 @@ export function Header() {
             <Link key={item.href} href={item.href} className={`relative rounded-lg px-2.5 py-3 text-sm font-bold transition after:absolute after:inset-x-3 after:bottom-1 after:h-px after:origin-right after:scale-x-0 after:bg-gold-500 after:transition-transform hover:after:scale-x-100 ${light ? 'text-white/85 hover:text-gold-300' : 'text-navy-900 hover:text-gold-500'} ${pathname === item.href ? 'after:scale-x-100' : ''}`}>{item.label}</Link>
           ))}
         </nav>
-        <div className="hidden xl:block"><Button href="/membership/#plans" className="min-h-11 px-5">عضویت در خانه</Button></div>
+        <div className="hidden items-center gap-3 xl:flex"><ThemeToggle light={light} /><Button href="/membership/#plans" className="min-h-11 px-5">عضویت در خانه</Button></div>
         <button onClick={() => setOpen(true)} aria-label="بازکردن منو" className={`grid size-11 place-items-center rounded-xl border xl:hidden ${light ? 'border-white/20 text-white' : 'border-gray-200 text-navy-900'}`}><Menu /></button>
       </div>
     </header>
     <AnimatePresence>{open && (
       <motion.div className="fixed inset-0 z-[90] overflow-y-auto bg-navy-950 p-5 text-white xl:hidden" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} transition={{ duration: .35 }}>
-        <div className="flex items-center justify-between"><Logo light /><button className="grid size-11 place-items-center rounded-xl border border-white/15" onClick={() => setOpen(false)} aria-label="بستن منو"><X /></button></div>
+        <div className="flex items-center justify-between"><Logo light /><div className="flex items-center gap-2"><ThemeToggle light /><button className="grid size-11 place-items-center rounded-xl border border-white/15" onClick={() => setOpen(false)} aria-label="بستن منو"><X /></button></div></div>
         <nav className="mt-10" aria-label="منوی موبایل">
           {NAV_ITEMS.map((item, index) => (
             <motion.div key={item.href} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .06 + index * .05 }}>

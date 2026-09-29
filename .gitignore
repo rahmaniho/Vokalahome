@@ -6,3 +6,6 @@ out/
 *.tsbuildinfo
 .env*
 !.env.example
+
+# ساخته‌شده خودکار توسط scripts/generate-manifest.mjs (پیش از هر build)؛ کامیت نشود
+public/manifest.webmanifest

@@ -10,6 +10,7 @@ import { events } from '@/lib/data/events';
 import { faqs } from '@/lib/data/faqs';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/events/' },
   title: 'رویدادها و نشست‌های علمی',
   description: 'تقویم نشست‌های علمی، کارگاه‌ها و میزگردهای تخصصی خانه وکلا؛ رایگان برای اعضا.',
 };
@@ -26,7 +27,7 @@ export default function EventsPage() {
     <PageHero
       eyebrow="تقویم علمی"
       current="رویدادها"
-      title={<>تبادل دانش حقوقی،<br /><span className="gold-text">هر هفته در خانه وکلا</span></>}
+      title={<>تبادل دانش حقوقی،<br /><span className="gold-text-on-dark">هر هفته در خانه وکلا</span></>}
       description="نشست‌ها و کارگاه‌های تخصصی برای به‌روز ماندن و آموختن از تجربه همکاران؛ اعضا رایگان یا با تخفیف شرکت می‌کنند."
     />
 
@@ -50,7 +51,7 @@ export default function EventsPage() {
 
     <section className="section-space bg-white">
       <div className="container-shell">
-        <SectionTitle eyebrow="برنامه‌های پیش رو" title={<>تقویم رویدادهای<br /><span className="text-gold-500">فصل جاری</span></>} description="ظرفیت برخی برنامه‌ها محدود است؛ ثبت‌نام زودهنگام توصیه می‌شود." />
+        <SectionTitle eyebrow="برنامه‌های پیش رو" title={<>تقویم رویدادهای<br /><span className="text-[#96791D]">فصل جاری</span></>} description="ظرفیت برخی برنامه‌ها محدود است؛ ثبت‌نام زودهنگام توصیه می‌شود." />
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {events.map((event, index) => <Reveal key={event.slug} delay={index * .05}><EventCard event={event} /></Reveal>)}
         </div>

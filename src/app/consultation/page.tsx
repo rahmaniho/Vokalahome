@@ -8,6 +8,7 @@ import { Reveal } from '@/components/animation/Reveal';
 import { lawyers } from '@/lib/data/lawyers';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/consultation/' },
   title: 'مشاوره حقوقی برای مراجعان',
   description: 'ثبت درخواست مشاوره حقوقی در خانه وکلا؛ موضوع شما به وکیل عضو متخصص همان حوزه ارجاع می‌شود.',
 };
@@ -24,7 +25,7 @@ export default function ConsultationPage() {
     <PageHero
       eyebrow="ویژه مراجعان"
       current="مشاوره حقوقی"
-      title={<>موضوع خود را بگویید،<br /><span className="gold-text">وکیل مناسب را معرفی می‌کنیم</span></>}
+      title={<>موضوع خود را بگویید،<br /><span className="gold-text-on-dark">وکیل مناسب را معرفی می‌کنیم</span></>}
       description="خانه وکلا محل حضور ده‌ها وکیل با تخصص‌های متفاوت است. درخواست شما بررسی و به وکیل عضو متناسب با موضوع پرونده ارجاع داده می‌شود."
     />
 
@@ -46,7 +47,7 @@ export default function ConsultationPage() {
 
     <section id="booking" className="section-space bg-[#F0F1F4]">
       <div className="container-shell">
-        <SectionTitle eyebrow="ثبت درخواست" title={<>زمان جلسه مشاوره را<br /><span className="text-gold-500">انتخاب کنید</span></>} description="ثبت فرم به معنی رزرو اولیه است؛ پس از تماس پذیرش، نام وکیل و زمان قطعی اعلام می‌شود." />
+        <SectionTitle eyebrow="ثبت درخواست" title={<>زمان جلسه مشاوره را<br /><span className="text-[#96791D]">انتخاب کنید</span></>} description="ثبت فرم به معنی رزرو اولیه است؛ پس از تماس پذیرش، نام وکیل و زمان قطعی اعلام می‌شود." />
         <div className="mt-10"><BookingWidget /></div>
       </div>
     </section>

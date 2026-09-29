@@ -10,6 +10,7 @@ import { plans, membershipSteps } from '@/lib/data/plans';
 import { faqs } from '@/lib/data/faqs';
 
 export const metadata: Metadata = {
+  alternates: { canonical: '/membership/' },
   title: 'عضویت در خانه وکلا',
   description: 'پلن‌های عضویت خانه وکلا برای کارآموزان، وکلای دادگستری و وکلای بدون دفتر فیزیکی؛ اتاق مشاوره رایگان، ارجاع موکل و نشست‌های علمی.',
 };
@@ -28,7 +29,7 @@ export default function MembershipPage() {
     <PageHero
       eyebrow="عضویت"
       current="عضویت"
-      title={<>عضو شوید و<br /><span className="gold-text">اینجا را دفتر خود بدانید</span></>}
+      title={<>عضو شوید و<br /><span className="gold-text-on-dark">اینجا را دفتر خود بدانید</span></>}
       description="عضویت در خانه وکلا یعنی یک نشانی حرفه‌ای، اتاق مشاوره رایگان، شبکه‌ای از همکاران و برنامه‌ای منظم برای یادگیری."
     />
 
@@ -52,7 +53,7 @@ export default function MembershipPage() {
 
     <section id="plans" className="section-space bg-white">
       <div className="container-shell">
-        <SectionTitle align="center" eyebrow="پلن‌ها و تعرفه" title={<>سه سطح عضویت،<br /><span className="text-gold-500">یک خانه مشترک</span></>} description="پرداخت سه‌ماهه ۱۰٪ و پرداخت سالانه ۲۰٪ تخفیف دارد." />
+        <SectionTitle align="center" eyebrow="پلن‌ها و تعرفه" title={<>سه سطح عضویت،<br /><span className="text-[#96791D]">یک خانه مشترک</span></>} description="پرداخت سه‌ماهه ۱۰٪ و پرداخت سالانه ۲۰٪ تخفیف دارد." />
         <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
           {plans.map((plan, index) => <Reveal key={plan.slug} delay={index * .07}><PlanCard plan={plan} /></Reveal>)}
         </div>
@@ -82,7 +83,7 @@ export default function MembershipPage() {
 
     <section id="join" className="section-space bg-[#F0F1F4]">
       <div className="container-shell grid gap-12 lg:grid-cols-[.85fr_1.15fr]">
-        <SectionTitle eyebrow="فرم عضویت" title={<>درخواست عضویت یا<br /><span className="text-gold-500">رزرو بازدید</span></>} description="فرم را تکمیل کنید؛ دبیرخانه ظرف یک روز کاری برای احراز پروانه و هماهنگی جلسه آشنایی تماس می‌گیرد. اولین قهوه مهمان ما." />
+        <SectionTitle eyebrow="فرم عضویت" title={<>درخواست عضویت یا<br /><span className="text-[#96791D]">رزرو بازدید</span></>} description="فرم را تکمیل کنید؛ دبیرخانه ظرف یک روز کاری برای احراز پروانه و هماهنگی جلسه آشنایی تماس می‌گیرد. اولین قهوه مهمان ما." />
         <ContactForm kind="membership" />
       </div>
     </section>
