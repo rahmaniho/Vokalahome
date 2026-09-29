@@ -1,9 +1,11 @@
 {
-  "name": "khane-vokil",
+  "name": "khane-vokala",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run generate:manifest && next dev",
+    "prebuild": "npm run generate:manifest",
+    "generate:manifest": "node scripts/generate-manifest.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
