@@ -2,76 +2,354 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================================
+   توکن‌های طراحی «خانه وکلا»
+   رنگ‌های معنایی به‌صورت سه‌تایی RGB تعریف می‌شوند تا Tailwind بتواند
+   با <alpha-value> شفافیت اعمال کند. حالت تاریک فقط همین متغیرها را عوض می‌کند.
+   ========================================================================= */
 :root {
-  --navy: #0b132b;
-  --navy-deep: #070d1e;
-  --gold: #d4af37;
-  --paper: #f8f7f3;
+  color-scheme: light;
+
+  /* برند */
+  --brand-navy: 11 31 58; /* #0B1F3A */
+  --brand-gold: 201 162 39; /* #C9A227 */
+  --brand-mist: 245 246 248; /* #F5F6F8 */
+
+  /* سطوح */
+  --surface: 255 255 255;
+  --surface-2: 245 246 248;
+  --surface-3: 232 234 239;
+
+  /* متن */
+  --ink: 11 31 58;
+  --ink-muted: 90 103 124;
+  --ink-faint: 141 152 168;
+
+  /* خطوط */
+  --line: 226 230 237;
+
+  --header-height: 76px;
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 110px; }
-body {
-  margin: 0;
-  color: #0b132b;
-  background: #f8f7f3;
-  font-family: "Vazirmatn Variable", Tahoma, sans-serif;
-  font-feature-settings: "ss01", "ss02";
-  overflow-x: hidden;
+.dark {
+  color-scheme: dark;
+  --surface: 8 20 38;
+  --surface-2: 11 31 58;
+  --surface-3: 18 46 82;
+  --ink: 236 240 247;
+  --ink-muted: 163 176 196;
+  --ink-faint: 122 137 160;
+  --line: 30 56 92;
 }
-::selection { color: #0b132b; background: #e5b650; }
-a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
-a { color: inherit; text-decoration: none; }
-button, input, select, textarea { font: inherit; }
-button { cursor: pointer; }
-:focus-visible { outline: 3px solid rgba(212,175,55,.7); outline-offset: 4px; }
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--header-height) + 24px);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: rgb(var(--surface-2));
+    color: rgb(var(--ink));
+    font-family: var(--font-vazirmatn), Vazirmatn, Tahoma, system-ui, sans-serif;
+    font-feature-settings: 'ss01', 'ss02';
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  ::selection {
+    color: rgb(var(--brand-navy));
+    background: rgb(var(--brand-gold));
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* دسترسی‌پذیری: حلقه فوکوس همیشه دیده شود. */
+  :focus-visible {
+    outline: 3px solid rgb(var(--brand-gold) / 0.75);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* اعداد در جهت درست نمایش داده شوند. */
+  [dir='ltr'] {
+    direction: ltr;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* نوار اسکرول هماهنگ با برند */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--surface-2));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--brand-navy) / 0.25);
+    border-radius: 99px;
+    border: 2px solid rgb(var(--surface-2));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--brand-gold));
+  }
+}
 
 @layer components {
-  .container-shell { @apply mx-auto w-full max-w-container px-4 sm:px-6; }
-  .section-space { @apply py-20 lg:py-28; }
-  .eyebrow { @apply inline-flex items-center gap-2 text-xs font-bold tracking-[.12em] text-gold-500; }
-  .eyebrow::before { content: ""; @apply h-px w-7 bg-gold-500; }
-  .display-title { @apply text-3xl font-black leading-[1.35] tracking-[-.035em] sm:text-4xl lg:text-[2.8rem]; }
-  .body-copy { @apply leading-[2] text-gray-600; }
-  .glass { background: rgba(255,255,255,.82); border: 1px solid rgba(255,255,255,.7); backdrop-filter: blur(18px); }
-  .dark-glass { background: rgba(11,19,43,.72); border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(18px); }
-  .gold-text { background: linear-gradient(135deg,#f0cd6f,#d4af37 45%,#fff0ad); -webkit-background-clip: text; color: transparent; }
-  .noise { position: relative; }
-  .noise::after { content:""; position:absolute; inset:0; pointer-events:none; opacity:.025; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E"); }
-  .card-lift { @apply transition duration-500 hover:-translate-y-2 hover:shadow-soft; }
-  .text-balance { text-wrap: balance; }
+  /* ——— چیدمان ——— */
+  .container-shell {
+    @apply mx-auto w-full max-w-container px-4 sm:px-6;
+  }
+  .section-space {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  /* ——— تایپوگرافی ——— */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-bold tracking-[.12em] text-gold-600 dark:text-gold-400;
+  }
+  .eyebrow::before {
+    content: '';
+    @apply h-px w-7 bg-gold-500;
+  }
+  .display-title {
+    @apply text-[1.75rem] font-black leading-[1.4] tracking-[-.03em] sm:text-4xl lg:text-[2.7rem];
+    text-wrap: balance;
+  }
+  .body-copy {
+    @apply leading-[2] text-ink-muted;
+  }
+  .gold-text {
+    background: linear-gradient(135deg, #e6ce83, #c9a227 45%, #f8f0d8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-stroke {
+    -webkit-text-stroke: 1px rgb(201 162 39 / 0.3);
+    color: transparent;
+  }
+  .vertical-label {
+    writing-mode: vertical-rl;
+  }
+
+  /* ——— سطوح ——— */
+  .surface-card {
+    @apply rounded-3xl border border-line bg-surface;
+  }
+  .glass {
+    background: rgb(var(--surface) / 0.82);
+    border: 1px solid rgb(var(--line) / 0.7);
+    backdrop-filter: blur(16px);
+  }
+  .dark-glass {
+    background: rgb(5 13 24 / 0.68);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    backdrop-filter: blur(16px);
+  }
+  .card-lift {
+    @apply transition duration-300 hover:-translate-y-1.5 hover:shadow-lift;
+  }
+
+  /* ——— فرم‌ها ——— */
+  .form-control {
+    @apply min-h-12 w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none transition
+           placeholder:text-ink-faint focus:border-gold-500 focus:ring-4 focus:ring-gold-500/15;
+  }
+  .form-control-error {
+    @apply border-red-400 focus:border-red-500 focus:ring-red-500/15;
+  }
+  .form-label {
+    @apply mb-2 block text-sm font-bold text-ink;
+  }
+  .form-hint {
+    @apply mt-1.5 block text-[11px] leading-5 text-ink-faint;
+  }
+  .form-error {
+    @apply mt-1.5 flex items-center gap-1 text-[11px] font-bold text-red-600 dark:text-red-400;
+  }
+
+  /* ——— اهداف لمسی: حداقل ۴۴px مطابق WCAG 2.5.5 ——— */
+  .tap-target {
+    @apply inline-flex min-h-11 min-w-11 items-center justify-center;
+  }
+
+  /* ——— محتوای متنی وبلاگ ——— */
+  .prose-fa h2 {
+    @apply mb-4 mt-10 scroll-mt-28 text-xl font-black text-ink sm:text-2xl;
+  }
+  .prose-fa h3 {
+    @apply mb-3 mt-8 scroll-mt-28 text-lg font-black text-ink;
+  }
+  .prose-fa p {
+    @apply mb-5 leading-[2.15] text-ink-muted;
+  }
+  .prose-fa ul {
+    @apply mb-5 space-y-2 pr-5;
+  }
+  .prose-fa li {
+    @apply list-disc leading-[2] text-ink-muted marker:text-gold-500;
+  }
+  .prose-fa blockquote {
+    @apply my-6 rounded-2xl border-r-4 border-gold-500 bg-surface-2 p-5 text-sm leading-[2] text-ink-muted;
+  }
 }
 
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  /* پنهان‌کردن نوار اسکرول در کاروسل‌های افقی */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* =========================================================================
+   الگوها و افکت‌های تزئینی (همه CSS خالص، بدون تصویر اضافه)
+   ========================================================================= */
 .hero-grid {
-  background-image: linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-image: linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: linear-gradient(to bottom, black, transparent 88%);
 }
-.gold-line { background: linear-gradient(90deg, transparent, #d4af37, transparent); }
-.text-stroke { -webkit-text-stroke: 1px rgba(212,175,55,.26); color: transparent; }
-.vertical-label { writing-mode: vertical-rl; }
 
-.service-card::before { content:""; position:absolute; right:0; top:0; height:3px; width:0; background:linear-gradient(90deg,#f0cd6f,#d4af37); transition:width .5s ease; }
-.service-card:hover::before { width:100%; }
-.service-card::after { content:""; position:absolute; left:-70px; bottom:-90px; width:180px; height:180px; border-radius:999px; background:rgba(212,175,55,.06); transform:scale(.6); transition:transform .5s; }
-.service-card:hover::after { transform:scale(1.3); }
+.gold-line {
+  background: linear-gradient(90deg, transparent, #c9a227, transparent);
+}
 
-.legal-pattern { background-image: radial-gradient(circle at 1px 1px, rgba(212,175,55,.19) 1px, transparent 0); background-size: 24px 24px; }
+.legal-pattern {
+  background-image: radial-gradient(circle at 1px 1px, rgb(201 162 39 / 0.18) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
 .persian-pattern {
-  background-color:#0b132b;
-  background-image: linear-gradient(30deg,#111c3c 12%,transparent 12.5%,transparent 87%,#111c3c 87.5%,#111c3c),linear-gradient(150deg,#111c3c 12%,transparent 12.5%,transparent 87%,#111c3c 87.5%,#111c3c),linear-gradient(30deg,#111c3c 12%,transparent 12.5%,transparent 87%,#111c3c 87.5%,#111c3c),linear-gradient(150deg,#111c3c 12%,transparent 12.5%,transparent 87%,#111c3c 87.5%,#111c3c),linear-gradient(60deg,rgba(212,175,55,.05) 25%,transparent 25.5%,transparent 75%,rgba(212,175,55,.05) 75%);
-  background-size:48px 84px;background-position:0 0,0 0,24px 42px,24px 42px,0 0;
+  background-color: #0b1f3a;
+  background-image: linear-gradient(30deg, #102845 12%, transparent 12.5%, transparent 87%, #102845 87.5%, #102845),
+    linear-gradient(150deg, #102845 12%, transparent 12.5%, transparent 87%, #102845 87.5%, #102845),
+    linear-gradient(30deg, #102845 12%, transparent 12.5%, transparent 87%, #102845 87.5%, #102845),
+    linear-gradient(150deg, #102845 12%, transparent 12.5%, transparent 87%, #102845 87.5%, #102845),
+    linear-gradient(60deg, rgb(201 162 39 / 0.05) 25%, transparent 25.5%, transparent 75%, rgb(201 162 39 / 0.05) 75%);
+  background-size: 48px 84px;
+  background-position: 0 0, 0 0, 24px 42px, 24px 42px, 0 0;
 }
 
-.form-control { @apply w-full rounded-2xl border border-gray-200 bg-white px-4 py-3.5 text-sm text-navy-900 outline-none transition placeholder:text-gray-400 focus:border-gold-500 focus:ring-4 focus:ring-gold-500/10; }
-.form-label { @apply mb-2 block text-sm font-bold text-navy-900; }
-
-.prose-fa h2 { @apply mb-4 mt-10 text-2xl font-black text-navy-900; }
-.prose-fa p { @apply mb-5 leading-[2.1] text-gray-600; }
-
-@media (pointer: fine) {
-  body.has-custom-cursor, body.has-custom-cursor a, body.has-custom-cursor button { cursor: none; }
+.noise {
+  position: relative;
 }
+.noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, #e6ce83, #c9a227);
+  transition: width 0.45s ease;
+}
+.service-card:hover::before {
+  width: 100%;
+}
+
+/* =========================================================================
+   انیمیشن ورود بدون کتابخانه — با IntersectionObserver فعال می‌شود.
+   اگر JS در دسترس نباشد، محتوا به‌صورت عادی و کاملاً قابل مشاهده می‌ماند.
+   ========================================================================= */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+[data-reveal='visible'] {
+  opacity: 1;
+  transform: none;
+}
+.no-js [data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+/* =========================================================================
+   احترام به prefers-reduced-motion
+   ========================================================================= */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* چاپ تمیز */
+@media print {
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
 }

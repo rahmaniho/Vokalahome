@@ -1,261 +1,470 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import {
-  ArrowLeft, BadgeCheck, BookOpenCheck, Coffee, DoorOpen, Handshake, Landmark, Lightbulb,
-  MapPin, MessageCircle, Phone, ShieldCheck, Sparkles, UsersRound, Wifi,
+  ArrowLeft,
+  BadgeCheck,
+  BookOpenCheck,
+  Coffee,
+  DoorOpen,
+  Handshake,
+  Landmark,
+  Lightbulb,
+  MessageCircle,
+  Phone,
+  ShieldCheck,
+  Sparkles,
+  UsersRound,
+  Wifi,
 } from 'lucide-react';
 import { Hero } from './Hero';
 import { Reveal } from '@/components/animation/Reveal';
-import { CountUp } from '@/components/animation/CountUp';
 import { SectionTitle } from '@/components/ui/SectionTitle';
 import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Picture } from '@/components/ui/Picture';
 import { ServiceCard } from '@/components/cards/ServiceCard';
-import { LawyerCard } from '@/components/cards/LawyerCard';
-import { ArticleCard } from '@/components/cards/ArticleCard';
-import { PlanCard } from '@/components/cards/PlanCard';
 import { RoomCard } from '@/components/cards/RoomCard';
 import { EventCard } from '@/components/cards/EventCard';
+import { ArticleCard } from '@/components/cards/ArticleCard';
 import { FaqAccordion } from '@/components/interactive/FaqAccordion';
 import { TestimonialSlider } from '@/components/interactive/TestimonialSlider';
 import { services } from '@/lib/data/services';
-import { lawyers } from '@/lib/data/lawyers';
 import { articles } from '@/lib/data/articles';
-import { faqs } from '@/lib/data/faqs';
-import { plans } from '@/lib/data/plans';
 import { rooms } from '@/lib/data/rooms';
 import { events } from '@/lib/data/events';
-import { SITE, ROOM_RATE, QUICK_FACTS } from '@/lib/constants';
+import { plans, planPrice } from '@/lib/data/plans';
+import { partners, credentials } from '@/lib/data/partners';
+import { averageRating } from '@/lib/data/testimonials';
+import { SITE } from '@/lib/constants';
+import { formatToman, toFa } from '@/lib/utils';
 
-const why = [
-  [Coffee, 'کافه، نه سالن انتظار', 'فضای گرم با قهوه تخصصی؛ جایی که گفت‌وگوی حقوقی به‌جای راهروی دادگاه، پشت میز چوبی شکل می‌گیرد.'],
-  [DoorOpen, 'دفتر، بدون اجاره دفتر', 'اتاق‌های مشاوره مجهز و عایق صدا برای ملاقات با موکل؛ رایگان برای اعضا، ساعتی ۵۰۰ هزار تومان برای مهمانان.'],
-  [Lightbulb, 'تبادل دانش واقعی', 'نشست تحلیل آرا، کارگاه لایحه‌نویسی و میزگرد تخصصی؛ هر هفته دست‌کم یک برنامه علمی.'],
-  [Handshake, 'شبکه همکاری', 'پیدا کردن همکار پرونده، وکیل شهر دیگر یا کارشناس، فقط با یک گفت‌وگو در کافه.'],
+const WHY = [
+  [Coffee, 'کافه، نه سالن انتظار', 'فضای گرم با قهوهٔ تخصصی؛ جایی که گفت‌وگوی حقوقی به‌جای راهروی دادگاه، پشت میز چوبی شکل می‌گیرد.'],
+  [DoorOpen, 'دفتر، بدون اجارهٔ دفتر', 'اتاق‌های مشاورهٔ مجهز و عایق صدا برای ملاقات با موکل؛ رایگان برای اعضا، ساعتی ۵۰۰ هزار تومان برای مهمانان.'],
+  [Lightbulb, 'تبادل دانش واقعی', 'نشست تحلیل آرا، کارگاه لایحه‌نویسی و میزگرد تخصصی؛ هر هفته دست‌کم یک برنامهٔ علمی.'],
+  [Handshake, 'شبکهٔ همکاری', 'پیدا کردن همکار پرونده، وکیل شهر دیگر یا کارشناس، فقط با یک گفت‌وگو در کافه.'],
   [UsersRound, 'ارجاع مراجعان', 'مراجعان خانه وکلا بر اساس تخصص به وکلای عضو ارجاع داده می‌شوند.'],
   [ShieldCheck, 'محرمانگی حرفه‌ای', 'اتاق‌های بدون دوربین، عایق صوتی و کارکنانی متعهد به رازداری حرفه‌ای.'],
-];
+] as const;
 
-const amenities = [
+const AMENITIES = [
   [Wifi, 'اینترنت اختصاصی پرسرعت'],
   [BookOpenCheck, 'کتابخانه و بانک آرای قضایی'],
   [Landmark, 'نزدیکی به دادگستری و مراجع قضایی'],
   [BadgeCheck, 'پذیرش و منشی حرفه‌ای'],
-  [Coffee, 'قهوه تخصصی با تخفیف اعضا'],
+  [Coffee, 'قهوهٔ تخصصی با تخفیف اعضا'],
   [Sparkles, 'پارکینگ مهمان و اتاق انتظار موکل'],
-];
+] as const;
 
+/**
+ * تمام بخش‌های صفحهٔ نخست.
+ *
+ * همهٔ این بخش‌ها سرور-کامپوننت‌اند جز سه مورد تعاملی (نشانگر ساعت کاری،
+ * آکاردئون پرسش‌ها و اسلایدر نظرات). نتیجه: HTML کامل در همان پاسخ اول
+ * می‌رسد و جاوااسکریپت فقط برای همان سه تکه بارگذاری می‌شود.
+ */
 export function HomeSections() {
-  return <>
-    <Hero />
+  return (
+    <>
+      <Hero />
 
-    {/* آمار */}
-    <section id="stats" className="relative z-20 -mt-8">
-      <div className="container-shell">
-        <Reveal>
-          <div className="grid overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-soft sm:grid-cols-2 lg:grid-cols-4">
-            {QUICK_FACTS.map((fact, index) => (
-              <div key={fact.label} className="relative p-6 text-center lg:p-8">
-                {index > 0 && <i className="absolute right-0 top-1/4 hidden h-1/2 w-px bg-gradient-to-b from-transparent via-gray-200 to-transparent lg:block" />}
-                <strong className="block text-3xl font-black text-navy-900 lg:text-4xl"><CountUp end={fact.value} suffix={fact.suffix} /></strong>
-                <span className="mt-2 block text-xs text-gray-500">{fact.label}</span>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-
-    {/* معرفی */}
-    <section className="section-space overflow-hidden">
-      <div className="container-shell grid items-center gap-14 lg:grid-cols-2">
-        <Reveal direction="right" className="relative">
-          <div className="relative mr-4 aspect-[5/4] overflow-hidden rounded-[2rem] bg-coffee-900">
-            <Image src="/images/cafe/coffee-and-case.jpg" alt="قهوه و پرونده روی میز کافه وکلا" fill sizes="(max-width:1024px) 100vw,50vw" className="object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-coffee-950/60 to-transparent" />
-          </div>
-          <div className="absolute -bottom-6 right-0 rounded-2xl border border-white bg-white p-5 shadow-soft">
-            <strong className="block text-2xl font-black text-navy-900">۱۴ ساعت</strong>
-            <span className="text-[11px] text-gray-500">باز، هر روز هفته</span>
-          </div>
-          <div className="legal-pattern absolute -left-8 -top-8 -z-10 size-40 rounded-3xl" />
-        </Reveal>
-        <Reveal direction="left">
+      {/* ───────── چرا خانه وکلا ───────── */}
+      <section className="section-space">
+        <div className="container-shell">
           <SectionTitle
-            eyebrow="خانه وکلا چیست؟"
-            title={<>نه دفتر، نه کافه؛<br /><span className="text-gold-500">خانهٔ حرفه‌ای وکلا</span></>}
-            description="جایی که وکیل بعد از جلسه دادگاه می‌نشیند، قهوه‌اش را می‌نوشد، با همکارش درباره یک استدلال بحث می‌کند و یک ساعت بعد، در اتاق مجاور با موکلش جلسه رسمی دارد."
+            center
+            eyebrow="چرا خانه وکلا؟"
+            title={
+              <>
+                نه دفتر، نه کافه؛
+                <br />
+                <span className="text-gold-500">خانهٔ حرفه‌ای وکلا</span>
+              </>
+            }
+            description="جایی که وکیل بعد از جلسهٔ دادگاه می‌نشیند، قهوه‌اش را می‌نوشد، با همکارش دربارهٔ یک استدلال بحث می‌کند و یک ساعت بعد در اتاق مجاور با موکلش جلسهٔ رسمی دارد."
           />
-          <div className="mt-7 grid gap-3 sm:grid-cols-2">
-            {['کافه و سالن گفت‌وگو', 'شش اتاق مشاوره مجهز', 'کتابخانه و سالن مطالعه', 'سالن نشست‌های علمی'].map((item) => (
-              <span key={item} className="flex items-center gap-2 text-sm font-bold text-navy-900">
-                <i className="grid size-6 place-items-center rounded-full bg-gold-500/15 text-gold-500"><Sparkles size={13} /></i>{item}
-              </span>
+
+          <ul className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {WHY.map(([Icon, title, text], index) => (
+              <Reveal as="li" key={title} delay={index * 60}>
+                <div className="h-full rounded-3xl border border-line bg-surface p-6 transition hover:border-gold-500/40 hover:shadow-soft">
+                  <span className="grid size-12 place-items-center rounded-2xl bg-gold-500/12 text-gold-600 dark:text-gold-400">
+                    <Icon size={22} strokeWidth={1.7} aria-hidden />
+                  </span>
+                  <h3 className="mt-5 text-base font-black text-ink">{title}</h3>
+                  <p className="mt-2.5 text-sm leading-[1.95] text-ink-muted">{text}</p>
+                </div>
+              </Reveal>
             ))}
-          </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button href="/about/" variant="outline" arrow>داستان خانه وکلا</Button>
-            <Button href="/membership/#plans">عضویت</Button>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-
-    {/* امکانات */}
-    <section className="section-space bg-white">
-      <div className="container-shell">
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <SectionTitle eyebrow="امکانات خانه" title={<>هرچه یک وکیل<br /><span className="text-gold-500">به آن نیاز دارد</span></>} description="از یک فنجان قهوه تا اتاق داوری هشت‌نفره؛ همه زیر یک سقف." />
-          <Link href="/services/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">همه امکانات <ArrowLeft size={16} /></Link>
+          </ul>
         </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((service, index) => <Reveal key={service.slug} delay={index * .05}><ServiceCard service={service} index={index} /></Reveal>)}
-        </div>
-      </div>
-    </section>
+      </section>
 
-    {/* اتاق‌های مشاوره + تعرفه */}
-    <section className="section-space bg-navy-950 text-white">
-      <div className="container-shell">
-        <div className="grid items-end gap-8 lg:grid-cols-[1.2fr_.8fr]">
-          <SectionTitle light eyebrow="اتاق‌های مشاوره" title={<>دفتر فیزیکی ندارید؟<br /><span className="gold-text">اینجا دفتر شماست</span></>} description="اتاق‌های عایق صدا با پذیرایی و پذیرش حرفه‌ای؛ موکل شما وارد یک فضای شایسته می‌شود، نه یک کافی‌شاپ شلوغ." />
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-gold-500/30 bg-gold-500/10 p-5">
-              <span className="text-[11px] text-white/60">اعضای خانه وکلا</span>
-              <strong className="mt-2 block text-2xl font-black text-gold-300">{ROOM_RATE.memberPrice}</strong>
-              <small className="mt-1 block text-[10px] leading-5 text-white/45">{ROOM_RATE.memberNote}</small>
+      {/* ───────── معرفی + امکانات ───────── */}
+      <section className="section-space bg-surface-2">
+        <div className="container-shell grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <Reveal className="relative">
+            <div className="overflow-hidden rounded-[2rem] border border-line shadow-soft">
+              <Picture
+                src="/images/gallery/cafe-bar.jpg"
+                alt="بار قهوه و میزهای گفت‌وگو در سالن اصلی خانه وکلا"
+                sizes="(max-width: 1024px) 100vw, 560px"
+                className="aspect-[5/4]"
+              />
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <span className="text-[11px] text-white/60">وکلای غیرعضو</span>
-              <strong className="mt-2 block text-2xl font-black text-white">{ROOM_RATE.guestPrice}</strong>
-              <small className="mt-1 block text-[10px] leading-5 text-white/45">{ROOM_RATE.unit} · {ROOM_RATE.guestNote}</small>
+            <div className="absolute -bottom-5 right-4 rounded-2xl border border-line bg-surface p-5 shadow-lift">
+              <strong className="block text-2xl font-black text-ink">۱۴ ساعت</strong>
+              <span className="text-[11px] text-ink-faint">باز، هر روز هفته</span>
+            </div>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <SectionTitle
+              eyebrow="امکانات خانه"
+              title={
+                <>
+                  هرچه یک وکیل
+                  <br />
+                  <span className="text-gold-500">به آن نیاز دارد</span>
+                </>
+              }
+              description="از یک فنجان قهوه تا اتاق داوری هشت‌نفره؛ همه زیر یک سقف و در چند قدمی دادگستری."
+            />
+
+            <ul className="mt-7 grid gap-3 sm:grid-cols-2">
+              {AMENITIES.map(([Icon, label]) => (
+                <li key={label} className="flex items-center gap-2.5 text-sm font-bold text-ink">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-gold-500/12 text-gold-600 dark:text-gold-400">
+                    <Icon size={15} aria-hidden />
+                  </span>
+                  {label}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button href="/about/" variant="outline" arrow>
+                داستان خانه وکلا
+              </Button>
+              <Button href="/gallery/" variant="ghost">
+                گالری و تور مجازی
+              </Button>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ───────── خدمات ───────── */}
+      <section className="section-space">
+        <div className="container-shell">
+          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <SectionTitle
+              eyebrow="خدمات"
+              title={
+                <>
+                  شش خدمت اصلی،
+                  <br />
+                  <span className="text-gold-500">یک تجربهٔ یکپارچه</span>
+                </>
+              }
+            />
+            <Link
+              href="/services/"
+              className="inline-flex min-h-11 items-center gap-2 text-sm font-black text-ink transition hover:text-gold-600"
+            >
+              همهٔ خدمات
+              <ArrowLeft size={16} aria-hidden />
+            </Link>
+          </div>
+
+          <ul className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {services.map((service, index) => (
+              <Reveal as="li" key={service.slug} delay={index * 50}>
+                <ServiceCard service={service} index={index} />
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ───────── اتاق‌های مشاوره ───────── */}
+      <section className="section-space noise persian-pattern bg-navy-950 text-white">
+        <div className="container-shell">
+          <div className="grid items-end gap-8 lg:grid-cols-[1.2fr_.8fr]">
+            <SectionTitle
+              light
+              eyebrow="اتاق‌های مشاوره"
+              title={
+                <>
+                  دفتر فیزیکی ندارید؟
+                  <br />
+                  <span className="text-gold-400">اینجا دفتر شماست</span>
+                </>
+              }
+              description="اتاق‌های عایق صدا با پذیرایی و پذیرش حرفه‌ای؛ موکل شما وارد یک فضای شایسته می‌شود، نه یک کافی‌شاپ شلوغ."
+            />
+            <div className="rounded-3xl border border-white/12 bg-white/5 p-6">
+              <p className="text-xs text-white/50">تعرفهٔ اتاق مشاوره</p>
+              <div className="mt-3 flex items-baseline gap-2">
+                <b className="text-3xl font-black text-gold-400">رایگان</b>
+                <span className="text-xs text-white/55">برای اعضا</span>
+              </div>
+              <p className="mt-3 border-t border-white/10 pt-3 text-xs leading-6 text-white/55">
+                وکلای مهمان: ساعتی <b className="text-white">{formatToman(500_000)} تومان</b> شامل پذیرایی و خدمات منشی.
+              </p>
+            </div>
+          </div>
+
+          <ul className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {rooms.slice(0, 3).map((room, index) => (
+              <Reveal as="li" key={room.slug} delay={index * 60}>
+                <RoomCard room={room} />
+              </Reveal>
+            ))}
+          </ul>
+
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            <Button href="/rooms/" variant="gold" arrow>
+              دیدن همهٔ شش اتاق
+            </Button>
+            <Button href="/consultation/" variant="light">
+              رزرو آنلاین اتاق
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── عضویت ───────── */}
+      <section className="section-space">
+        <div className="container-shell">
+          <SectionTitle
+            center
+            eyebrow="عضویت"
+            title={
+              <>
+                عضو شوید،
+                <br />
+                <span className="text-gold-500">خانه‌تان را تحویل بگیرید</span>
+              </>
+            }
+            description="سه پلن ساده متناسب با مرحلهٔ حرفه‌ای شما؛ بدون قرارداد بلندمدت اجباری و بدون هزینهٔ پنهان."
+          />
+
+          <ul className="mt-12 grid gap-5 lg:grid-cols-3">
+            {plans.map((plan, index) => {
+              const price = planPrice(plan, 'monthly');
+              return (
+                <Reveal as="li" key={plan.slug} delay={index * 70}>
+                  <article
+                    className={`relative flex h-full flex-col rounded-3xl border p-6 transition ${
+                      plan.highlight
+                        ? 'border-gold-500 bg-surface shadow-lift'
+                        : 'border-line bg-surface hover:border-gold-500/40'
+                    }`}
+                  >
+                    {plan.badge && (
+                      <span className="absolute -top-3 right-6">
+                        <Badge tone={plan.highlight ? 'gold' : 'neutral'} className="shadow-sm">
+                          {plan.badge}
+                        </Badge>
+                      </span>
+                    )}
+                    <h3 className="text-lg font-black text-ink">{plan.name}</h3>
+                    <p className="mt-1.5 text-xs leading-6 text-ink-faint">{plan.audience}</p>
+                    <div className="my-5 flex items-end gap-1.5 border-y border-line py-5">
+                      <b className="text-3xl font-black leading-none text-ink">{formatToman(price.total)}</b>
+                      <span className="pb-0.5 text-xs text-ink-muted">تومان / ماه</span>
+                    </div>
+                    <p className="text-xs font-bold text-gold-700 dark:text-gold-400">{plan.roomHours}</p>
+                    <ul className="mt-4 flex-1 space-y-2">
+                      {plan.features.slice(0, 4).map((feature) => (
+                        <li key={feature} className="flex gap-2 text-xs leading-[1.9] text-ink-muted">
+                          <BadgeCheck size={14} className="mt-1 shrink-0 text-emerald-600" aria-hidden />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      href="/membership/"
+                      className={`mt-6 flex min-h-12 items-center justify-center rounded-xl text-sm font-black transition ${
+                        plan.highlight
+                          ? 'bg-gold-500 text-navy-900 hover:bg-gold-400'
+                          : 'border border-line text-ink hover:border-gold-500 hover:text-gold-600'
+                      }`}
+                    >
+                      جزئیات و عضویت
+                    </Link>
+                  </article>
+                </Reveal>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
+      {/* ───────── رویدادها ───────── */}
+      <section className="section-space bg-surface-2">
+        <div className="container-shell">
+          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <SectionTitle
+              eyebrow="رویدادهای پیش‌رو"
+              title={
+                <>
+                  هر هفته دست‌کم
+                  <br />
+                  <span className="text-gold-500">یک برنامهٔ علمی</span>
+                </>
+              }
+            />
+            <Link
+              href="/events/"
+              className="inline-flex min-h-11 items-center gap-2 text-sm font-black text-ink transition hover:text-gold-600"
+            >
+              تقویم کامل رویدادها
+              <ArrowLeft size={16} aria-hidden />
+            </Link>
+          </div>
+
+          <ul className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {events.slice(0, 3).map((event, index) => (
+              <Reveal as="li" key={event.slug} delay={index * 60}>
+                <EventCard event={event} />
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ───────── اعتماد: نظرات + آمار ───────── */}
+      <section className="section-space noise bg-navy-900 text-white">
+        <div className="container-shell">
+          <SectionTitle
+            center
+            light
+            eyebrow={`رضایت اعضا · میانگین ${toFa(averageRating)} از ۵`}
+            title="اعضا چه می‌گویند"
+            description="نظرات زیر نمونه‌اند و پیش از انتشار نهایی با بازخورد واقعی اعضا جایگزین می‌شوند."
+          />
+          <div className="mt-11">
+            <TestimonialSlider light />
+          </div>
+
+          {/* همکاران و اعتبارنامه‌ها */}
+          <div className="mt-16 border-t border-white/10 pt-12">
+            <p className="mb-7 text-center text-xs font-bold text-white/40">با همکاری و تأیید</p>
+            <ul className="flex flex-wrap items-center justify-center gap-3">
+              {partners.map((partner) => (
+                <li
+                  key={partner.id}
+                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center transition hover:border-gold-500/40"
+                >
+                  <b className="block text-xs font-black text-white/85">{partner.short}</b>
+                  <small className="mt-0.5 block text-[9px] text-white/35">{partner.kind}</small>
+                </li>
+              ))}
+            </ul>
+
+            <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {credentials.map((item) => (
+                <li key={item.title} className="rounded-2xl border border-white/10 bg-white/[.04] p-5">
+                  <b className="block text-xs font-black text-gold-400">{item.title}</b>
+                  <p className="mt-2 text-[11px] leading-[1.9] text-white/50">{item.detail}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── وبلاگ ───────── */}
+      <section className="section-space">
+        <div className="container-shell">
+          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <SectionTitle
+              eyebrow="وبلاگ حقوقی"
+              title={
+                <>
+                  دانش حقوقی،
+                  <br />
+                  <span className="text-gold-500">به زبان قابل فهم</span>
+                </>
+              }
+            />
+            <Link
+              href="/blog/"
+              className="inline-flex min-h-11 items-center gap-2 text-sm font-black text-ink transition hover:text-gold-600"
+            >
+              همهٔ مطالب
+              <ArrowLeft size={16} aria-hidden />
+            </Link>
+          </div>
+
+          <ul className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {articles.slice(0, 3).map((article, index) => (
+              <Reveal as="li" key={article.slug} delay={index * 60}>
+                <ArticleCard article={article} />
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ───────── پرسش‌های پرتکرار ───────── */}
+      <section className="section-space bg-surface-2">
+        <div className="container-shell grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">
+          <div>
+            <SectionTitle
+              eyebrow="پرسش‌های پرتکرار"
+              title={
+                <>
+                  هر چیزی که
+                  <br />
+                  <span className="text-gold-500">می‌خواهید بدانید</span>
+                </>
+              }
+              description="اگر پاسخ پرسشتان را پیدا نکردید، مستقیم با ما تماس بگیرید."
+            />
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button href={SITE.phoneHref} variant="navy">
+                <Phone size={16} aria-hidden />
+                تماس تلفنی
+              </Button>
+              <Button href={SITE.whatsappHref} variant="outline">
+                <MessageCircle size={16} aria-hidden />
+                واتساپ
+              </Button>
+            </div>
+          </div>
+          <FaqAccordion limit={6} />
+        </div>
+      </section>
+
+      {/* ───────── فراخوان پایانی ───────── */}
+      <section className="section-space">
+        <div className="container-shell">
+          <div className="noise persian-pattern relative overflow-hidden rounded-[2rem] bg-navy-900 px-6 py-14 text-center text-white sm:px-12 sm:py-16">
+            <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-gold-500/15 blur-[90px]" />
+            <div className="relative mx-auto max-w-2xl">
+              <span className="eyebrow mb-5 justify-center">یک قهوه، یک گفت‌وگو</span>
+              <h2 className="text-2xl font-black leading-[1.5] sm:text-4xl">
+                بیایید از نزدیک ببینید
+                <br />
+                <span className="text-gold-400">اولین قهوه مهمان ما</span>
+              </h2>
+              <p className="mx-auto mt-5 max-w-lg text-sm leading-[2.05] text-white/60">
+                بدون تعهد و بدون هزینه؛ سری بزنید، فضا را ببینید و اگر پسندیدید عضو شوید.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-3">
+                <Button href="/contact/" variant="gold" size="lg" arrow>
+                  هماهنگی بازدید
+                </Button>
+                <Button href="/membership/" variant="light" size="lg">
+                  مشاهدهٔ پلن‌های عضویت
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {rooms.slice(0, 3).map((room, index) => <Reveal key={room.slug} delay={index * .06}><RoomCard room={room} /></Reveal>)}
-        </div>
-        <div className="mt-10 text-center"><Button href="/rooms/" variant="light" arrow>مشاهده همه فضاها و رزرو</Button></div>
-      </div>
-    </section>
-
-    {/* چرا خانه وکلا */}
-    <section className="section-space">
-      <div className="container-shell">
-        <SectionTitle align="center" eyebrow="چرا اینجا؟" title={<>وکالت، کار تنهایی نیست</>} description="خانه وکلا برای این ساخته شد که دانش، تجربه و فضای حرفه‌ای میان وکلا به اشتراک گذاشته شود." />
-        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {why.map(([Icon, title, text], index) => {
-            const I = Icon as typeof Coffee;
-            return <Reveal key={title as string} delay={index * .05}>
-              <article className="h-full rounded-3xl border border-gray-100 bg-white p-7 transition duration-500 hover:-translate-y-2 hover:shadow-soft">
-                <span className="grid size-12 place-items-center rounded-2xl bg-coffee-100 text-coffee-700"><I size={23} /></span>
-                <h3 className="mt-5 font-black text-navy-900">{title as string}</h3>
-                <p className="mt-2 text-xs leading-7 text-gray-500">{text as string}</p>
-              </article>
-            </Reveal>;
-          })}
-        </div>
-      </div>
-    </section>
-
-    {/* پلن‌های عضویت */}
-    <section className="section-space bg-white">
-      <div className="container-shell">
-        <SectionTitle align="center" eyebrow="عضویت" title={<>عضو شوید،<br /><span className="text-gold-500">خانه را خانهٔ خود کنید</span></>} description="سه سطح عضویت متناسب با مسیر حرفه‌ای شما؛ از کارآموزی تا دفتر مجازی کامل." />
-        <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
-          {plans.map((plan, index) => <Reveal key={plan.slug} delay={index * .07}><PlanCard plan={plan} /></Reveal>)}
-        </div>
-        <p className="mt-8 text-center text-xs text-gray-400">امکان پرداخت سه‌ماهه و سالانه با تخفیف · عضویت پس از احراز پروانه وکالت فعال می‌شود.</p>
-      </div>
-    </section>
-
-    {/* رویدادها */}
-    <section className="section-space bg-ivory">
-      <div className="container-shell">
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <SectionTitle eyebrow="تقویم علمی" title={<>هر هفته یک بهانه<br /><span className="text-gold-500">برای یاد گرفتن</span></>} description="نشست تحلیل آرا، کارگاه مهارتی و میزگرد تخصصی؛ رایگان برای اعضا." />
-          <Link href="/events/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">تقویم کامل <ArrowLeft size={16} /></Link>
-        </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-          {events.map((event, index) => <Reveal key={event.slug} delay={index * .05}><EventCard event={event} /></Reveal>)}
-        </div>
-      </div>
-    </section>
-
-    {/* امکانات جانبی نواری */}
-    <section className="bg-coffee-900 py-14 text-white">
-      <div className="container-shell grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {amenities.map(([Icon, label]) => {
-          const I = Icon as typeof Wifi;
-          return <span key={label as string} className="flex items-center gap-3 text-sm text-white/75">
-            <i className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/5 text-gold-400"><I size={19} /></i>{label as string}
-          </span>;
-        })}
-      </div>
-    </section>
-
-    {/* وکلای عضو */}
-    <section className="section-space">
-      <div className="container-shell">
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <SectionTitle eyebrow="اعضای خانه" title={<>وکلایی که اینجا<br /><span className="text-gold-500">قهوه می‌نوشند</span></>} description="مراجعان می‌توانند بر اساس تخصص، وکیل عضو مناسب پرونده خود را انتخاب کنند." />
-          <Link href="/lawyers/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">فهرست اعضا <ArrowLeft size={16} /></Link>
-        </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {lawyers.slice(0, 3).map((lawyer, index) => <Reveal key={lawyer.slug} delay={index * .06}><LawyerCard lawyer={lawyer} /></Reveal>)}
-        </div>
-      </div>
-    </section>
-
-    {/* تجربه اعضا */}
-    <section className="section-space bg-white">
-      <div className="container-shell">
-        <SectionTitle align="center" eyebrow="روایت اعضا" title="اینجا چه می‌گذرد؟" />
-        <div className="mt-12"><TestimonialSlider /></div>
-      </div>
-    </section>
-
-    {/* دانش‌نامه */}
-    <section className="section-space bg-ivory">
-      <div className="container-shell">
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <SectionTitle eyebrow="دانش‌نامه" title={<>نوشته‌های اعضای<br /><span className="text-gold-500">خانه وکلا</span></>} />
-          <Link href="/articles/" className="flex items-center gap-2 text-sm font-black text-navy-900 hover:text-gold-500">همه مقالات <ArrowLeft size={16} /></Link>
-        </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {articles.slice(0, 3).map((article, index) => <Reveal key={article.slug} delay={index * .06}><ArticleCard article={article} index={index} /></Reveal>)}
-        </div>
-      </div>
-    </section>
-
-    {/* پرسش‌ها */}
-    <section className="section-space">
-      <div className="container-shell grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
-        <SectionTitle eyebrow="پرسش‌های پرتکرار" title={<>هرچه درباره خانه وکلا<br /><span className="text-gold-500">باید بدانید</span></>} description="پاسخ کوتاه به رایج‌ترین پرسش‌های وکلا و مراجعان درباره عضویت، اتاق‌ها و رویدادها." />
-        <FaqAccordion items={faqs.slice(0, 6)} />
-      </div>
-    </section>
-
-    {/* CTA */}
-    <section className="relative overflow-hidden bg-navy-950 py-20 text-white">
-      <div className="persian-pattern absolute inset-0 opacity-30" />
-      <div className="container-shell relative grid items-center gap-10 lg:grid-cols-[1.3fr_.7fr]">
-        <div>
-          <span className="eyebrow mb-4">یک قهوه مهمان ما باشید</span>
-          <h2 className="display-title">پیش از عضویت، یک بار بیایید و بنشینید</h2>
-          <p className="mt-5 max-w-xl leading-[2] text-white/60">
-            فضا را ببینید، با اعضا گفت‌وگو کنید و اتاق‌ها را از نزدیک بررسی کنید. اولین قهوه مهمان خانه وکلا است.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button href="/membership/#join">رزرو بازدید و عضویت</Button>
-            <Button href={SITE.whatsappHref} variant="light" >گفت‌وگو در واتساپ</Button>
-          </div>
-        </div>
-        <div className="space-y-3 text-sm">
-          <a href={SITE.phoneHref} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-gold-500/50"><Phone className="text-gold-500" size={18} /><span dir="ltr">{SITE.phone}</span></a>
-          <span className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"><MapPin className="shrink-0 text-gold-500" size={18} />{SITE.address}</span>
-          <span className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"><MessageCircle className="shrink-0 text-gold-500" size={18} />{SITE.workHours}</span>
-        </div>
-      </div>
-    </section>
-  </>;
+      </section>
+    </>
+  );
 }

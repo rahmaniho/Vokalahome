@@ -1,5 +1,50 @@
-import { AlertCircle } from 'lucide-react';
 import { PageHero } from '@/components/layout/PageHero';
+import { Alert } from '@/components/ui/Alert';
 
-type Section={title:string;paragraphs:string[]};
-export function LegalPage({title,description,sections}:{title:string;description:string;sections:Section[]}){return <><PageHero eyebrow="اسناد حقوقی وب‌سایت" current={title} title={title} description={description}/><article className="section-space"><div className="container-shell"><div className="mx-auto max-w-3xl rounded-[2rem] border border-gray-100 bg-white p-6 shadow-sm sm:p-10"><div className="mb-8 flex gap-3 rounded-2xl bg-amber-50 p-4 text-xs leading-7 text-amber-900"><AlertCircle className="mt-1 shrink-0" size={18}/><p>آخرین به‌روزرسانی: ۵ مهر ۱۴۰۵ — متن حاضر نسخه پیشنهادی است و پیش از انتشار نهایی باید توسط مدیر مؤسسه بازبینی شود.</p></div><div className="prose-fa">{sections.map(section=><section key={section.title}><h2>{section.title}</h2>{section.paragraphs.map(p=><p key={p}>{p}</p>)}</section>)}</div></div></div></article></>}
+type Section = { title: string; paragraphs: string[] };
+
+/** قالب مشترک صفحات حقوقی سایت (حریم خصوصی، شرایط استفاده، سلب مسئولیت). */
+export function LegalPage({
+  title,
+  description,
+  sections,
+  href,
+}: {
+  title: string;
+  description: string;
+  sections: Section[];
+  href: string;
+}) {
+  return (
+    <>
+      <PageHero
+        eyebrow="اسناد حقوقی وب‌سایت"
+        title={title}
+        description={description}
+        crumbs={[{ label: title, href }]}
+      />
+
+      <article className="section-space">
+        <div className="container-shell">
+          <div className="mx-auto max-w-3xl rounded-[2rem] border border-line bg-surface p-6 shadow-soft sm:p-10">
+            <Alert tone="warning" className="mb-8">
+              آخرین به‌روزرسانی: ۵ مهر ۱۴۰۵ — متن حاضر نسخهٔ پیشنهادی است و پیش از انتشار نهایی باید توسط مدیر مؤسسه
+              بازبینی و تأیید شود.
+            </Alert>
+
+            <div className="prose-fa">
+              {sections.map((section) => (
+                <section key={section.title}>
+                  <h2>{section.title}</h2>
+                  {section.paragraphs.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </section>
+              ))}
+            </div>
+          </div>
+        </div>
+      </article>
+    </>
+  );
+}

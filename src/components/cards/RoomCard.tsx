@@ -1,36 +1,84 @@
+import Link from 'next/link';
 import { BookOpenCheck, Briefcase, Check, DoorClosed, Maximize2, Presentation, Scale, Users, Video } from 'lucide-react';
 import type { Room } from '@/types';
-import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Picture } from '@/components/ui/Picture';
 
-const icons = { DoorClosed, Briefcase, Scale, Video, Presentation, BookOpenCheck };
+const ICONS = { DoorClosed, Briefcase, Scale, Video, Presentation, BookOpenCheck };
 
 export function RoomCard({ room }: { room: Room }) {
-  const Icon = icons[room.icon as keyof typeof icons] || DoorClosed;
+  const Icon = ICONS[room.icon as keyof typeof ICONS] ?? DoorClosed;
+
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white p-7 transition duration-500 hover:-translate-y-2 hover:shadow-soft">
-      <span className="pointer-events-none absolute -left-16 -top-16 size-40 rounded-full bg-gold-500/5 transition duration-500 group-hover:scale-150" />
-      <div className="relative flex items-start justify-between">
-        <span className="grid size-14 place-items-center rounded-2xl bg-navy-900 text-gold-400 transition duration-500 group-hover:-rotate-6 group-hover:bg-gold-500 group-hover:text-navy-950"><Icon size={26} strokeWidth={1.6} /></span>
-        <span className="rounded-lg bg-coffee-100 px-2.5 py-1 text-[10px] font-bold text-coffee-700">{room.vibe}</span>
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-surface transition duration-300 hover:-translate-y-1.5 hover:border-gold-500/40 hover:shadow-lift">
+      {room.image && (
+        <div className="relative">
+          <Picture
+            src={room.image}
+            alt={`نمای ${room.name}`}
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 400px"
+            className="aspect-[16/10]"
+            imgClassName="transition duration-500 group-hover:scale-[1.04]"
+          />
+          <span className="absolute right-4 top-4">
+            <Badge tone="coffee" className="bg-white/90 text-coffee-700 backdrop-blur dark:bg-navy-950/80 dark:text-coffee-300">
+              {room.vibe}
+            </Badge>
+          </span>
+        </div>
+      )}
+
+      <div className="flex flex-1 flex-col p-6">
+        <div className="flex items-start gap-3">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-navy-900 text-gold-400 transition group-hover:bg-gold-500 group-hover:text-navy-900 dark:bg-navy-800">
+            <Icon size={21} strokeWidth={1.7} aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <h3 className="text-base font-black leading-7 text-ink transition group-hover:text-gold-600 sm:text-lg">
+              {room.name}
+            </h3>
+            <p className="mt-0.5 flex items-center gap-3 text-[11px] text-ink-faint">
+              <span className="flex items-center gap-1.5">
+                <Users size={12} aria-hidden />
+                {room.capacity}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Maximize2 size={12} aria-hidden />
+                {room.area}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <p className="mt-4 text-sm leading-[1.95] text-ink-muted">{room.description}</p>
+
+        <ul className="mt-4 flex-1 space-y-2 text-[11px] text-ink-muted">
+          {room.equipment.map((item) => (
+            <li key={item} className="flex gap-2">
+              <Check size={13} className="mt-0.5 shrink-0 text-emerald-600" aria-hidden />
+              {item}
+            </li>
+          ))}
+        </ul>
+
+        <dl className="mt-5 grid gap-2 rounded-2xl bg-surface-2 p-4 text-[11px]">
+          <div className="flex items-center justify-between">
+            <dt className="text-ink-muted">اعضای خانه وکلا</dt>
+            <dd className="font-black text-emerald-600 dark:text-emerald-400">{room.memberPrice}</dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="text-ink-muted">وکلای مهمان</dt>
+            <dd className="font-black text-ink">{room.guestPrice}</dd>
+          </div>
+        </dl>
+
+        <Link
+          href="/consultation/#booking"
+          className="mt-5 flex min-h-12 items-center justify-center rounded-xl border border-line text-sm font-black text-ink transition hover:border-gold-500 hover:bg-gold-500 hover:text-navy-900"
+        >
+          رزرو این فضا
+        </Link>
       </div>
-      <h3 className="relative mt-6 text-lg font-black text-navy-900">{room.name}</h3>
-      <p className="relative mt-3 text-sm leading-[1.95] text-gray-500">{room.description}</p>
-
-      <div className="relative my-5 flex items-center gap-4 border-y border-gray-100 py-3 text-[11px] text-gray-400">
-        <span className="flex items-center gap-1.5"><Users size={13} />{room.capacity}</span>
-        <span className="flex items-center gap-1.5"><Maximize2 size={13} />{room.area}</span>
-      </div>
-
-      <ul className="relative space-y-2 text-[11px] text-gray-600">
-        {room.equipment.map((item) => <li key={item} className="flex gap-2"><Check size={13} className="mt-0.5 shrink-0 text-gold-500" />{item}</li>)}
-      </ul>
-
-      <div className="relative mt-6 grid gap-2 rounded-2xl bg-ivory p-4 text-[11px]">
-        <span className="flex items-center justify-between"><span className="text-gray-500">اعضای خانه وکلا</span><b className="text-emerald-600">{room.memberPrice}</b></span>
-        <span className="flex items-center justify-between"><span className="text-gray-500">وکلای مهمان</span><b className="text-navy-900">{room.guestPrice}</b></span>
-      </div>
-
-      <div className="relative mt-auto pt-6"><Button href="/rooms/#booking" variant="outline" className="w-full">رزرو این فضا</Button></div>
     </article>
   );
 }

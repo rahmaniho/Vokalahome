@@ -1,7 +1,17 @@
 import type { Metadata } from 'next';
-import { PageHero } from '@/components/layout/PageHero';
-import { ArticlesCatalog } from '@/components/interactive/Catalogs';
-import { SectionTitle } from '@/components/ui/SectionTitle';
+import { RedirectStub } from '@/components/layout/RedirectStub';
+import { canonicalUrl } from '@/lib/site';
 
-export const metadata:Metadata={title:'دانش‌نامه حقوقی',description:'مقالات کاربردی حقوقی خانه وکلا درباره قراردادها، املاک، خانواده، کیفری و تجارت.'};
-export default function ArticlesPage(){return <><PageHero eyebrow="دانش‌نامه حقوقی" current="مقالات" title={<>دانش حقوقی برای<br/><span className="gold-text">تصمیم‌های روزمره</span></>} description="مطالب این بخش با زبان روشن نوشته شده‌اند تا پیش از اقدام، پرسش‌های درست‌تری داشته باشید. این مطالب جایگزین مشاوره اختصاصی نیستند."/><section className="section-space"><div className="container-shell"><SectionTitle eyebrow="تازه‌ترین مطالب" title="جستجو و مطالعه در دانش‌نامه"/><div className="mt-10"><ArticlesCatalog/></div></div></section></>}
+/**
+ * مسیر قدیمی `/articles/` — به `/blog/` منتقل شده است.
+ * صفحه noindex است و canonical آن به آدرس جدید اشاره می‌کند.
+ */
+export const metadata: Metadata = {
+  title: 'انتقال به وبلاگ',
+  robots: { index: false, follow: true },
+  alternates: { canonical: canonicalUrl('/blog/') },
+};
+
+export default function ArticlesRedirectPage() {
+  return <RedirectStub to="/blog/" label="وبلاگ" />;
+}

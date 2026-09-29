@@ -1,9 +1,48 @@
-import Link from 'next/link';
-import { ChevronLeft, Home } from 'lucide-react';
+import { Breadcrumbs, type Crumb } from '@/components/ui/Breadcrumbs';
+import { cn } from '@/lib/utils';
 
-export function PageHero({ eyebrow, title, description, current }: { eyebrow: string; title: React.ReactNode; description: string; current: string }) {
-  return <section className="noise persian-pattern relative overflow-hidden pb-20 pt-40 text-white lg:pb-24 lg:pt-48">
-    <div className="absolute -left-16 top-20 size-72 rounded-full bg-gold-500/10 blur-[90px]"/><div className="absolute right-1/3 top-0 h-px w-1/3 gold-line"/>
-    <div className="container-shell relative"><div className="mb-7 flex items-center gap-2 text-xs text-white/45"><Link href="/" aria-label="خانه"><Home size={14}/></Link><ChevronLeft size={12}/><span>{current}</span></div><span className="eyebrow mb-4">{eyebrow}</span><h1 className="max-w-3xl text-4xl font-black leading-[1.35] tracking-[-.04em] sm:text-5xl lg:text-6xl">{title}</h1><p className="mt-6 max-w-2xl leading-[2] text-white/60">{description}</p></div>
-  </section>;
+type PageHeroProps = {
+  eyebrow?: string;
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  /** مسیر راهنما بدون «خانه» — خودش اضافه می‌شود. */
+  crumbs: Crumb[];
+  /** محتوای اختیاری زیر توضیح (دکمه، آمار کوتاه…) */
+  children?: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * سربرگ یکسان همهٔ صفحات داخلی.
+ *
+ * چون هدر روی صفحات داخلی جامد است، فاصلهٔ بالای این بخش (`pt-*`) باید
+ * ارتفاع هدر را جبران کند؛ در غیر این صورت عنوان زیر هدر پنهان می‌ماند.
+ */
+export function PageHero({ eyebrow, title, description, crumbs, children, className }: PageHeroProps) {
+  return (
+    <section
+      className={cn(
+        'noise persian-pattern relative overflow-hidden bg-navy-900 pb-16 pt-32 text-white sm:pb-20 sm:pt-36 lg:pb-24 lg:pt-44',
+        className,
+      )}
+    >
+      {/* هالهٔ طلایی تزئینی — صرفاً CSS، بدون تصویر و بدون هزینهٔ شبکه. */}
+      <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-gold-500/12 blur-[100px]" />
+      <div aria-hidden className="pointer-events-none absolute -left-20 bottom-0 size-72 rounded-full bg-navy-500/20 blur-[90px]" />
+
+      <div className="container-shell relative">
+        <Breadcrumbs items={crumbs} light className="mb-7" />
+
+        {eyebrow && <span className="eyebrow mb-4">{eyebrow}</span>}
+
+        <h1 className="max-w-3xl text-3xl font-black leading-[1.4] tracking-[-.03em] sm:text-4xl lg:text-5xl">
+          {title}
+        </h1>
+
+        {description && <p className="mt-5 max-w-2xl text-sm leading-[2.05] text-white/60 sm:text-base">{description}</p>}
+
+        {children && <div className="mt-8">{children}</div>}
+      </div>
+    </section>
+  );
 }

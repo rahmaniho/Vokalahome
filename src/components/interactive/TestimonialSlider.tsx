@@ -1,17 +1,111 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Quote, Star } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, Quote, Star } from 'lucide-react';
+import { Badge } from '@/components/ui/Badge';
+import { testimonials } from '@/lib/data/testimonials';
+import { cn } from '@/lib/utils';
 
-const testimonials = [
-  { text: 'شش ماه است دفتر ندارم و همه جلسات موکلانم را در اتاق «استیناف» برگزار می‌کنم. موکل وارد فضایی حرفه‌ای می‌شود و من هزینه اجاره دفتر نمی‌دهم.', name: 'ع. طاهری', case: 'عضو پلن دفتر مجازی' },
-  { text: 'در یک دورهمی «قهوه و پرونده»، همکاری پیدا کردم که پرونده دیوان عدالت اداری را با هم بردیم. ارزش عضویت برای من همین شبکه است.', name: 'ر. موسوی', case: 'عضو پلن وکالت' },
-  { text: 'کارآموز بودم و اینجا کنار وکلای باتجربه نشستم و لایحه‌نویسی یاد گرفتم؛ چیزی که هیچ کلاسی به من نداد.', name: 'ف. کریمی', case: 'عضو پلن کارآموزی' },
-];
+/**
+ * کاروسل نظرات — بدون کتابخانه.
+ *
+ * پیاده‌سازی با `scroll-snap` بومی مرورگر: روی موبایل با انگشت کشیده می‌شود،
+ * روی دسکتاپ دکمه دارد، با صفحه‌کلید پیمایش‌پذیر است و حتی بدون JS هم
+ * به‌صورت یک نوار افقی قابل اسکرول کار می‌کند.
+ */
+export function TestimonialSlider({ light = false }: { light?: boolean }) {
+  const trackRef = useRef<HTMLUListElement>(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
 
-export function TestimonialSlider() {
-  const [active, setActive] = useState(0);
-  const [pause, setPause] = useState(false);
-  useEffect(() => { if (pause) return; const timer = window.setInterval(() => setActive(v => (v + 1) % testimonials.length), 4500); return () => clearInterval(timer); }, [pause]);
-  return <div onMouseEnter={() => setPause(true)} onMouseLeave={() => setPause(false)}><div className="grid gap-5 md:grid-cols-3">{testimonials.map((item,index) => <article key={item.name} className={`relative overflow-hidden rounded-3xl border p-7 transition duration-500 ${active === index ? 'border-gold-500 bg-white shadow-soft' : 'border-gray-100 bg-white/60 md:opacity-65'}`}><Quote className="absolute -left-2 top-2 size-20 text-gold-500/8"/><div className="flex gap-1 text-gold-500">{Array.from({length:5}).map((_,i)=><Star key={i} size={14} fill="currentColor"/>)}</div><p className="relative mt-5 min-h-32 text-sm italic leading-[2.1] text-gray-600">«{item.text}»</p><div className="mt-5 border-t border-gray-100 pt-4"><b className="text-sm text-navy-900">{item.name}</b><span className="mr-2 text-[10px] text-gray-400">{item.case}</span></div></article>)}</div><div className="mt-7 flex justify-center gap-2">{testimonials.map((_,i)=><button key={i} onClick={()=>setActive(i)} aria-label={`نظر ${i+1}`} className={`h-2 rounded-full transition ${active===i?'w-7 bg-gold-500':'w-2 bg-gray-300'}`}/>)}</div></div>;
+  const updateEdges = () => {
+    const node = trackRef.current;
+    if (!node) return;
+    // در RTL مقدار scrollLeft منفی یا معکوس است؛ با abs یکدست می‌شود.
+    const offset = Math.abs(node.scrollLeft);
+    setAtStart(offset < 8);
+    setAtEnd(offset + node.clientWidth >= node.scrollWidth - 8);
+  };
+
+  const scrollBy = (direction: 1 | -1) => {
+    const node = trackRef.current;
+    if (!node) return;
+    const amount = node.clientWidth * 0.8;
+    node.scrollBy({ left: direction * amount, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="relative">
+      <ul
+        ref={trackRef}
+        onScroll={updateEdges}
+        className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0"
+      >
+        {testimonials.map((item) => (
+          <li
+            key={item.id}
+            className={cn(
+              'flex w-[300px] shrink-0 snap-start flex-col rounded-3xl border p-6 sm:w-[360px]',
+              light ? 'border-white/12 bg-white/[.05]' : 'border-line bg-surface',
+            )}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <Quote size={26} className="shrink-0 text-gold-500/45" aria-hidden />
+              <Badge tone={light ? 'gold' : 'neutral'}>{item.kind}</Badge>
+            </div>
+
+            <div className="mt-3 flex gap-0.5" aria-label={`امتیاز ${item.rating} از ۵`}>
+              {Array.from({ length: 5 }, (_, index) => (
+                <Star
+                  key={index}
+                  size={14}
+                  aria-hidden
+                  className={index < item.rating ? 'fill-gold-500 text-gold-500' : 'text-mist-300 dark:text-navy-700'}
+                />
+              ))}
+            </div>
+
+            <p className={cn('mt-4 flex-1 text-sm leading-[2.05]', light ? 'text-white/70' : 'text-ink-muted')}>
+              {item.text}
+            </p>
+
+            <div className={cn('mt-5 border-t pt-4', light ? 'border-white/10' : 'border-line')}>
+              <b className={cn('block text-sm font-black', light ? 'text-white' : 'text-ink')}>{item.name}</b>
+              <small className={cn('mt-1 block text-[11px]', light ? 'text-white/45' : 'text-ink-faint')}>
+                {item.role}
+              </small>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-5 flex items-center justify-center gap-2">
+        {/* در RTL، دکمهٔ «قبلی» پیکان راست دارد. */}
+        <button
+          type="button"
+          onClick={() => scrollBy(1)}
+          disabled={atStart}
+          aria-label="نظرات قبلی"
+          className={cn(
+            'tap-target rounded-xl border transition disabled:opacity-30',
+            light ? 'border-white/15 text-white/80 hover:border-gold-400' : 'border-line text-ink-muted hover:border-gold-500',
+          )}
+        >
+          <ChevronRight size={18} aria-hidden />
+        </button>
+        <button
+          type="button"
+          onClick={() => scrollBy(-1)}
+          disabled={atEnd}
+          aria-label="نظرات بعدی"
+          className={cn(
+            'tap-target rounded-xl border transition disabled:opacity-30',
+            light ? 'border-white/15 text-white/80 hover:border-gold-400' : 'border-line text-ink-muted hover:border-gold-500',
+          )}
+        >
+          <ChevronLeft size={18} aria-hidden />
+        </button>
+      </div>
+    </div>
+  );
 }

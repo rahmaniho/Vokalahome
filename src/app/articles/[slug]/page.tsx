@@ -1,17 +1,23 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
-import { notFound } from 'next/navigation';
-import { AlertCircle, CalendarDays, Clock3, UserRound } from 'lucide-react';
+import { RedirectStub } from '@/components/layout/RedirectStub';
 import { articles, getArticle } from '@/lib/data/articles';
-import { PageHero } from '@/components/layout/PageHero';
-import { ArticleCard } from '@/components/cards/ArticleCard';
-import { ShareButtons } from '@/components/interactive/ShareButtons';
-import { SectionTitle } from '@/components/ui/SectionTitle';
+import { canonicalUrl } from '@/lib/site';
 
-export function generateStaticParams(){return articles.map(article=>({slug:article.slug}))}
-export function generateMetadata({params}:{params:{slug:string}}):Metadata{const article=getArticle(params.slug);return article?{title:article.title,description:article.excerpt,openGraph:{type:'article',title:article.title,description:article.excerpt,images:['/images/articles/legal-editorial.jpg']}}:{title:'مقاله'}}
-export default function ArticlePage({params}:{params:{slug:string}}){const article=getArticle(params.slug);if(!article)notFound();const related=articles.filter(a=>a.slug!==article.slug).slice(0,3);const schema={'@context':'https://schema.org','@type':'Article',headline:article.title,datePublished:'2025-09-09',author:{'@type':'Person',name:article.author},publisher:{'@type':'Organization',name:'خانه وکلا'}};return <>
-<PageHero eyebrow={article.category} current="مقاله" title={article.title} description={article.excerpt}/>
-<article className="section-space"><div className="container-shell"><div className="mx-auto max-w-4xl"><div className="relative aspect-[16/8] overflow-hidden rounded-[2rem]"><Image src="/images/articles/legal-editorial.jpg" alt="تصویر مقاله حقوقی" fill priority className="object-cover" sizes="896px"/><div className="absolute inset-0 bg-gradient-to-t from-navy-950/60 to-transparent"/></div><div className="-mt-7 relative z-10 mx-4 flex flex-wrap items-center gap-5 rounded-2xl border border-gray-100 bg-white p-5 text-xs text-gray-500 shadow-soft sm:mx-10"><span className="flex items-center gap-2"><UserRound size={15} className="text-gold-500"/>{article.author}</span><span className="flex items-center gap-2"><CalendarDays size={15} className="text-gold-500"/>{article.date}</span><span className="flex items-center gap-2"><Clock3 size={15} className="text-gold-500"/>{article.readTime} مطالعه</span></div><div className="prose-fa mx-auto mt-12 max-w-3xl"><p className="text-lg font-medium text-navy-900">{article.excerpt}</p>{article.content.map(section=><section key={section.heading}><h2>{section.heading}</h2>{section.paragraphs.map(paragraph=><p key={paragraph}>{paragraph}</p>)}</section>)}<h2>جمع‌بندی</h2><p>اگر موضوع شما با این مطلب مرتبط است، مدارک و زمان‌بندی اتفاقات را آماده کنید و پیش از اقدامی که آثار حقوقی دارد، ارزیابی اختصاصی بگیرید. پاسخ درست همیشه به جزئیات پرونده وابسته است.</p><div className="my-10 flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-xs leading-7 text-amber-900"><AlertCircle className="mt-1 shrink-0" size={19}/><p>این مقاله صرفاً برای آگاهی عمومی است و به‌منزله مشاوره حقوقی یا ایجاد رابطه وکیل و موکل نیست. قوانین و رویه‌ها ممکن است تغییر کنند.</p></div><div className="border-t border-gray-100 pt-6"><ShareButtons title={article.title}/></div></div></div></div><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema)}}/></article>
-<section className="section-space bg-white"><div className="container-shell"><SectionTitle eyebrow="پیشنهاد مطالعه" title="مقالات مرتبط"/><div className="mt-10 grid gap-5 md:grid-cols-3">{related.map((item,index)=><ArticleCard key={item.slug} article={item} index={index}/>)}</div></div></section>
-</>}
+/** همان اسلاگ‌های وبلاگ، تا هر لینک قدیمی ایندکس‌شده هم صفحهٔ انتقال داشته باشد. */
+export function generateStaticParams() {
+  return articles.map((article) => ({ slug: article.slug }));
+}
+
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const article = getArticle(params.slug);
+  return {
+    title: article ? `انتقال به ${article.title}` : 'انتقال به وبلاگ',
+    robots: { index: false, follow: true },
+    alternates: { canonical: canonicalUrl(`/blog/${params.slug}/`) },
+  };
+}
+
+export default function ArticleRedirectPage({ params }: { params: { slug: string } }) {
+  const article = getArticle(params.slug);
+  return <RedirectStub to={`/blog/${params.slug}/`} label={article ? `«${article.title}»` : 'وبلاگ'} />;
+}

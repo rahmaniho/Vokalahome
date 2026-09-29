@@ -1,8 +1,28 @@
+# وابستگی‌ها
 node_modules/
+
+# خروجی build
 .next/
 out/
+
+# دارایی‌های تولیدشده (در زمان build ساخته می‌شوند — «npm run images»)
+public/images/**/*-[0-9][0-9][0-9].webp
+public/images/**/*-[0-9][0-9][0-9].avif
+public/images/**/*-[0-9][0-9][0-9][0-9].webp
+public/images/**/*-[0-9][0-9][0-9][0-9].avif
+src/lib/generated/
+
+# فایل‌هایی که اسکریپت prebuild می‌سازد
+public/manifest.webmanifest
+public/offline.html
+public/robots.txt
+
+# محیط
+.env*
+!.env.example
+
+# متفرقه
 .DS_Store
 *.log
 *.tsbuildinfo
-.env*
-!.env.example
+.tmp-preview/

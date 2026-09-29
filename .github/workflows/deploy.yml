@@ -1,55 +1,117 @@
-name: Deploy Next.js to GitHub Pages
+# ─────────────────────────────────────────────────────────────────────────────
+#  انتشار خودکار «خانه وکلا» روی GitHub Pages
+#
+#  هر push روی شاخهٔ main:  بررسی کیفیت → build استاتیک → انتشار
+#  خروجی کاملاً استاتیک است (next export) و هیچ سروری لازم ندارد.
+#
+#  پیش‌نیاز یک‌باره در مخزن:
+#    Settings → Pages → Build and deployment → Source = "GitHub Actions"
+#
+#  مهاجرت به دامنهٔ اختصاصی: فقط دو متغیر env پایین را عوض کنید.
+#  راهنمای کامل: docs/CUSTOM-DOMAIN.md
+# ─────────────────────────────────────────────────────────────────────────────
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
+    branches: ['main']
+  workflow_dispatch: # امکان اجرای دستی از تب Actions
 
+# حداقل دسترسی لازم برای انتشار
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# اگر چند push پشت‌سرهم آمد، فقط آخری منتشر شود — ولی اجرای در حال انتشار قطع نشود
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
+
+env:
+  # آدرس انتشار فعلی. برای دامنهٔ اختصاصی:
+  #   NEXT_PUBLIC_SITE_ORIGIN: https://vokalahome.com
+  #   NEXT_PUBLIC_BASE_PATH: ''
+  NEXT_PUBLIC_SITE_ORIGIN: https://rahmaniho.github.io
+  NEXT_PUBLIC_BASE_PATH: /Vokalahome
+  # اگر فرم Formspree ساختید، مقدارش را در
+  # Settings → Secrets and variables → Actions → Variables با نام
+  # FORMSPREE_ENDPOINT ذخیره کنید. خالی بودنش مشکلی ایجاد نمی‌کند:
+  # فرم‌ها به‌صورت خودکار روی واتساپ fallback می‌کنند.
+  NEXT_PUBLIC_FORMSPREE_ENDPOINT: ${{ vars.FORMSPREE_ENDPOINT }}
 
 jobs:
   build:
+    name: ساخت خروجی استاتیک
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: دریافت کد
         uses: actions/checkout@v4
-      
-      - name: Setup Node.js
+
+      - name: نصب Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
           cache: 'npm'
-      
-      - name: Install dependencies
+
+      - name: نصب وابستگی‌ها
         run: npm ci
-      
-      - name: Build Next.js
+
+      # تصاویر WebP/AVIF در مخزن نیستند (حجم زیاد) و هر build ساخته می‌شوند.
+      # کش کردنشان زمان build را از ~۳ دقیقه به ~۴۰ ثانیه می‌رساند.
+      - name: کش نسخه‌های بهینهٔ تصاویر
+        uses: actions/cache@v4
+        with:
+          path: |
+            public/images
+            src/lib/generated
+          key: images-${{ hashFiles('public/images/**/*.jpg', 'public/images/**/*.png', 'scripts/optimize-images.mjs') }}
+          restore-keys: images-
+
+      # prebuild باید پیش از typecheck اجرا شود:
+      # src/lib/generated/images.ts در .gitignore است و همین‌جا ساخته می‌شود.
+      # بدون آن، `tsc` روی یک checkout تازه ماژول گم‌شده گزارش می‌دهد.
+      # (مرحلهٔ build دوباره صدایش می‌زند، ولی --if-needed کارش را رد می‌کند.)
+      - name: آماده‌سازی دارایی‌های تولیدی
+        run: npm run prebuild
+
+      - name: بررسی نوع‌ها (TypeScript)
+        run: npm run typecheck
+
+      - name: بررسی سبک کد (ESLint)
+        run: npm run lint
+
+      # `npm run build` شامل prebuild (manifest/robots/offline) و
+      # postbuild (.nojekyll، sitemap، rss، service worker، لینت خروجی) است.
+      - name: ساخت سایت
         run: npm run build
-        env:
-          NODE_ENV: production
-      
-      - name: Add .nojekyll file
+
+      # شبکهٔ ایمنی: اگر postbuild به هر دلیل اجرا نشد، بدون .nojekyll
+      # پوشه‌های _next/ را GitHub Pages نادیده می‌گیرد و سایت بی‌استایل می‌شود.
+      - name: اطمینان از وجود .nojekyll
         run: touch ./out/.nojekyll
-      
-      - name: Upload artifact
+
+      - name: گزارش حجم خروجی
+        run: |
+          echo "### خروجی build" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- صفحات HTML: $(find out -name '*.html' | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- حجم کل: $(du -sh out | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "- حجم JS: $(du -sh out/_next/static/chunks 2>/dev/null | cut -f1)" >> $GITHUB_STEP_SUMMARY
+
+      - name: بارگذاری خروجی
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
 
   deploy:
+    name: انتشار
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - name: انتشار روی GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

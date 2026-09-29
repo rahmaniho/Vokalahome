@@ -1,26 +1,177 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Check, Clock3, Coins, FileCheck2, Scale } from 'lucide-react';
-import { services, getService } from '@/lib/data/services';
+import { Check, Clock3, Coins, Scale } from 'lucide-react';
 import { PageHero } from '@/components/layout/PageHero';
 import { SectionTitle } from '@/components/ui/SectionTitle';
 import { Button } from '@/components/ui/Button';
-import { FaqAccordion } from '@/components/interactive/FaqAccordion';
-import { BookingWidget } from '@/components/consultation/BookingWidget';
-import { LawyerCard } from '@/components/cards/LawyerCard';
 import { ArticleCard } from '@/components/cards/ArticleCard';
-import { lawyers } from '@/lib/data/lawyers';
+import { ServiceCard } from '@/components/cards/ServiceCard';
+import { getService, services } from '@/lib/data/services';
 import { articles } from '@/lib/data/articles';
+import { buildMetadata } from '@/lib/seo';
+import { toFa } from '@/lib/utils';
 
-export function generateStaticParams(){return services.map(service=>({slug:service.slug}))}
-export function generateMetadata({params}:{params:{slug:string}}):Metadata{const service=getService(params.slug);return service?{title:service.title,description:service.description}:{title:'خدمت حقوقی'}}
+export function generateStaticParams() {
+  return services.map((service) => ({ slug: service.slug }));
+}
 
-export default function ServiceDetail({params}:{params:{slug:string}}){const service=getService(params.slug);if(!service)notFound();const faq=[{category:service.shortTitle,question:`برای استفاده از «${service.title}» چه باید کرد؟`,answer:'کافی است در پذیرش خانه وکلا حضور پیدا کنید یا از طریق فرم آنلاین رزرو کنید؛ اعضا از پنل اختصاصی خود اقدام می‌کنند.'},{category:service.shortTitle,question:'ساعات و زمان‌بندی چگونه است؟',answer:`زمان‌بندی این بخش ${service.duration} است. در ساعات پرتقاضا (۱۶ تا ۲۰) رزرو زودهنگام توصیه می‌شود.`},{category:service.shortTitle,question:'تعرفه این بخش چقدر است؟',answer:`${service.fee}. تعرفه‌ها شفاف اعلام می‌شوند و هزینه پنهانی وجود ندارد؛ اعضا از تخفیف یا رایگان بودن بهره‌مندند.`}];return <>
-<PageHero eyebrow={`امکانات خانه وکلا · ${service.shortTitle}`} current={service.title} title={<>{service.title}<br/><span className="gold-text">در خانه وکلا</span></>} description={service.description}/>
-<section className="section-space"><div className="container-shell grid gap-12 lg:grid-cols-[1fr_320px]"><article><SectionTitle eyebrow="معرفی" title="این بخش چگونه کار می‌کند؟"/><p className="mt-6 leading-[2.15] text-gray-600">{service.longDescription}</p><h2 className="mt-12 text-2xl font-black text-navy-900">آنچه در این بخش دارید</h2><div className="mt-6 grid gap-3 sm:grid-cols-2">{service.subservices.map(item=><div key={item} className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white p-4 text-sm font-bold text-navy-900"><Check className="text-gold-500" size={18}/>{item}</div>)}</div></article><aside className="h-fit rounded-3xl bg-navy-900 p-6 text-white lg:sticky lg:top-28"><Scale className="text-gold-500"/><h3 className="mt-4 text-xl font-black">استفاده از این بخش</h3><p className="mt-3 text-xs leading-7 text-white/55">اعضا رایگان یا با تخفیف استفاده می‌کنند؛ مهمانان بر اساس تعرفه اعلام‌شده.</p><div className="my-5 space-y-3 border-y border-white/10 py-5 text-xs"><span className="flex items-center gap-2"><Clock3 className="text-gold-500" size={16}/>{service.duration}</span><span className="flex items-center gap-2"><Coins className="text-gold-500" size={16}/>{service.fee}</span></div><Button href="/membership/#plans" className="w-full">عضویت در خانه</Button></aside></div></section>
-<section className="section-space bg-white"><div className="container-shell grid gap-14 lg:grid-cols-2"><div><SectionTitle eyebrow="پیش‌نیازها" title="برای استفاده لازم است"/><div className="mt-8 space-y-3">{service.documents.map((item,index)=><div key={item} className="flex items-center gap-4 rounded-2xl bg-gray-50 p-4"><span className="grid size-9 place-items-center rounded-xl bg-white text-xs font-black text-gold-500">۰{index+1}</span><span className="text-sm font-bold text-navy-900">{item}</span></div>)}</div></div><div><SectionTitle eyebrow="گام‌به‌گام" title="نحوه استفاده"/><div className="mt-8 space-y-0">{service.steps.map((item,index)=><div key={item} className="relative flex gap-4 pb-8 last:pb-0"><i className="absolute right-[19px] top-10 h-full w-px bg-gold-500/25 last:hidden"/><span className="relative z-10 grid size-10 shrink-0 place-items-center rounded-full bg-navy-900 text-xs font-black text-gold-400">{index+1}</span><div><h3 className="pt-2 text-sm font-black text-navy-900">{item}</h3><p className="mt-2 text-xs leading-7 text-gray-500">در این مرحله همکاران پذیرش خانه وکلا همراه شما هستند.</p></div></div>)}</div></div></div></section>
-<section className="section-space"><div className="container-shell grid gap-12 lg:grid-cols-[.75fr_1.25fr]"><SectionTitle eyebrow="پرسش‌های این بخش" title="پاسخ به پرتکرارترین پرسش‌ها"/><FaqAccordion items={faq}/></div></section>
-<section className="section-space bg-white"><div className="container-shell"><SectionTitle eyebrow="اعضای خانه" title="وکلایی که از این فضا استفاده می‌کنند"/><div className="mt-10 grid gap-5 md:grid-cols-3">{lawyers.slice(0,3).map(lawyer=><LawyerCard key={lawyer.slug} lawyer={lawyer}/>)}</div></div></section>
-<section className="section-space"><div className="container-shell"><SectionTitle eyebrow="مطالعه بیشتر" title="مقالات مرتبط و کاربردی"/><div className="mt-10 grid gap-5 md:grid-cols-3">{articles.slice(0,3).map((article,index)=><ArticleCard key={article.slug} article={article} index={index}/>)}</div></div></section>
-<section className="section-space bg-[#F0F1F4]"><div className="container-shell"><SectionTitle eyebrow="رزرو" title="زمان حضور خود را انتخاب کنید"/><div className="mt-10"><BookingWidget/></div></div></section>
-</>}
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const service = getService(params.slug);
+  if (!service) return buildMetadata({ title: 'خدمت یافت نشد', description: '', path: '/services/', noIndex: true });
+
+  return buildMetadata({
+    title: `${service.title} | خدمات خانه وکلا`,
+    description: service.description,
+    path: `/services/${service.slug}/`,
+    keywords: [service.shortTitle, ...service.subservices.slice(0, 4)],
+  });
+}
+
+export default function ServiceDetailPage({ params }: { params: { slug: string } }) {
+  const service = getService(params.slug);
+  if (!service) notFound();
+
+  const others = services.filter((item) => item.slug !== service.slug).slice(0, 3);
+
+  return (
+    <>
+      <PageHero
+        eyebrow={`خدمات · ${service.shortTitle}`}
+        title={
+          <>
+            {service.title}
+            <br />
+            <span className="text-gold-400">در خانه وکلا</span>
+          </>
+        }
+        description={service.description}
+        crumbs={[
+          { label: 'خدمات', href: '/services/' },
+          { label: service.shortTitle, href: `/services/${service.slug}/` },
+        ]}
+      />
+
+      {/* معرفی + جعبهٔ کناری */}
+      <section className="section-space">
+        <div className="container-shell grid gap-10 lg:grid-cols-[1fr_320px] lg:gap-14">
+          <article className="min-w-0">
+            <SectionTitle eyebrow="معرفی" title="این بخش چگونه کار می‌کند؟" />
+            <div className="prose-fa mt-6">
+              <p>{service.longDescription}</p>
+            </div>
+
+            <h2 className="mt-12 text-xl font-black text-ink sm:text-2xl">آنچه در این بخش دارید</h2>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+              {service.subservices.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-sm font-bold text-ink"
+                >
+                  <Check className="shrink-0 text-emerald-600" size={18} aria-hidden />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          <aside className="h-fit rounded-3xl bg-navy-900 p-6 text-white lg:sticky lg:top-24">
+            <Scale className="text-gold-500" aria-hidden />
+            <h2 className="mt-4 text-lg font-black">استفاده از این بخش</h2>
+            <p className="mt-3 text-xs leading-[1.95] text-white/55">
+              اعضا رایگان یا با تخفیف استفاده می‌کنند؛ مهمانان بر اساس تعرفهٔ اعلام‌شده.
+            </p>
+
+            <dl className="my-5 space-y-3 border-y border-white/10 py-5 text-xs">
+              <div className="flex items-center gap-2">
+                <Clock3 className="shrink-0 text-gold-500" size={16} aria-hidden />
+                <dt className="sr-only">زمان‌بندی</dt>
+                <dd>{service.duration}</dd>
+              </div>
+              <div className="flex items-start gap-2">
+                <Coins className="mt-0.5 shrink-0 text-gold-500" size={16} aria-hidden />
+                <dt className="sr-only">تعرفه</dt>
+                <dd className="leading-[1.85]">{service.fee}</dd>
+              </div>
+            </dl>
+
+            <Button href="/membership/" className="w-full">
+              عضویت در خانه
+            </Button>
+            <Button href="/consultation/" variant="light" className="mt-2.5 w-full">
+              رزرو و هماهنگی
+            </Button>
+          </aside>
+        </div>
+      </section>
+
+      {/* پیش‌نیاز و گام‌ها */}
+      <section className="section-space bg-surface-2">
+        <div className="container-shell grid gap-12 lg:grid-cols-2 lg:gap-14">
+          <div>
+            <SectionTitle eyebrow="پیش‌نیازها" title="برای استفاده لازم است" />
+            <ul className="mt-8 space-y-3">
+              {service.documents.map((item, index) => (
+                <li key={item} className="flex items-center gap-4 rounded-2xl bg-surface p-4">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-gold-500/12 text-xs font-black text-gold-600 dark:text-gold-400">
+                    {toFa(String(index + 1).padStart(2, '0'))}
+                  </span>
+                  <span className="text-sm font-bold text-ink">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <SectionTitle eyebrow="گام‌به‌گام" title="نحوهٔ استفاده" />
+            <ol className="mt-8">
+              {service.steps.map((item, index) => (
+                <li key={item} className="relative flex gap-4 pb-8 last:pb-0">
+                  {index < service.steps.length - 1 && (
+                    <i aria-hidden className="absolute right-[19px] top-11 h-[calc(100%-2.75rem)] w-px bg-gold-500/25" />
+                  )}
+                  <span className="relative z-10 grid size-10 shrink-0 place-items-center rounded-full bg-navy-900 text-xs font-black text-gold-400 dark:bg-navy-800">
+                    {toFa(index + 1)}
+                  </span>
+                  <div className="pt-2">
+                    <h3 className="text-sm font-black text-ink">{item}</h3>
+                    <p className="mt-2 text-xs leading-[1.95] text-ink-muted">
+                      در این مرحله همکاران پذیرش خانه وکلا همراه شما هستند.
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      {/* خدمات دیگر */}
+      <section className="section-space">
+        <div className="container-shell">
+          <SectionTitle eyebrow="ادامه بدهید" title="خدمات دیگر خانه" />
+          <ul className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {others.map((item, index) => (
+              <li key={item.slug}>
+                <ServiceCard service={item} index={index} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* مطالب مرتبط */}
+      <section className="section-space bg-surface-2">
+        <div className="container-shell">
+          <SectionTitle eyebrow="مطالعهٔ بیشتر" title="مطالب مرتبط و کاربردی" />
+          <ul className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {articles.slice(0, 3).map((article) => (
+              <li key={article.slug}>
+                <ArticleCard article={article} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    </>
+  );
+}

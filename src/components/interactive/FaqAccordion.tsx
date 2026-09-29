@@ -1,17 +1,102 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Plus } from 'lucide-react';
-import type { FAQItem } from '@/types';
+import { ChevronDown } from 'lucide-react';
+import { faqs } from '@/lib/data/faqs';
+import { cn } from '@/lib/utils';
 
-export function FaqAccordion({ items, withFilters = false }: { items: FAQItem[]; withFilters?: boolean }) {
-  const categories = ['همه', ...Array.from(new Set(items.map(item => item.category)))];
-  const [category, setCategory] = useState('همه');
-  const [open, setOpen] = useState(0);
-  const filtered = useMemo(() => category === 'همه' ? items : items.filter(item => item.category === category), [items, category]);
-  return <div>
-    {withFilters && <div className="mb-8 flex flex-wrap gap-2">{categories.map(cat => <button key={cat} onClick={() => { setCategory(cat); setOpen(0); }} className={`rounded-xl px-4 py-2 text-xs font-bold transition ${category === cat ? 'bg-navy-900 text-white' : 'border border-gray-200 bg-white text-gray-500 hover:border-gold-500'}`}>{cat}</button>)}</div>}
-    <div className="space-y-3">{filtered.map((item, index) => { const active = open === index; return <div key={item.question} className={`overflow-hidden rounded-2xl border bg-white transition ${active ? 'border-gold-500 shadow-[0_12px_40px_rgba(11,19,43,.06)]' : 'border-gray-100'}`}><button className="flex w-full items-center justify-between gap-4 p-5 text-right sm:p-6" onClick={() => setOpen(active ? -1 : index)} aria-expanded={active}><span className="font-extrabold text-navy-900">{item.question}</span><span className={`grid size-8 shrink-0 place-items-center rounded-lg bg-gold-500/10 text-gold-500 transition ${active ? 'rotate-45' : ''}`}><Plus size={18}/></span></button><AnimatePresence initial={false}>{active && <motion.div initial={{height:0,opacity:0}} animate={{height:'auto',opacity:1}} exit={{height:0,opacity:0}}><div className="border-t border-gray-100 px-5 pb-6 pt-4 text-sm leading-[2] text-gray-500 sm:px-6">{item.answer}<div className="mt-4 text-[10px] font-bold text-gold-500">پاسخ از تیم حقوقی خانه وکلا · ۲ دقیقه مطالعه</div></div></motion.div>}</AnimatePresence></div>})}</div>
-  </div>;
+/**
+ * آکاردئون پرسش‌های پرتکرار — بدون framer-motion.
+ *
+ * انیمیشن باز/بسته شدن با `grid-template-rows: 0fr → 1fr` انجام می‌شود؛
+ * ترفندی خالص‌CSS که برخلاف انیمیشن `height`، نیازی به دانستن ارتفاع
+ * محتوا ندارد و روی GPU اجرا می‌شود. نتیجه: صفر بایت جاوااسکریپت اضافه.
+ *
+ * دسترسی‌پذیری: هر پرسش یک `<button aria-expanded>` است که پاسخِ متناظر را
+ * با `aria-controls` معرفی می‌کند؛ صفحه‌خوان وضعیت باز/بسته را می‌خواند.
+ */
+export function FaqAccordion({ category: initialCategory, limit }: { category?: string; limit?: number } = {}) {
+  const categories = useMemo(() => ['همه', ...Array.from(new Set(faqs.map((item) => item.category)))], []);
+  const [category, setCategory] = useState(initialCategory ?? 'همه');
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  const visible = useMemo(() => {
+    const list = category === 'همه' ? faqs : faqs.filter((item) => item.category === category);
+    return limit ? list.slice(0, limit) : list;
+  }, [category, limit]);
+
+  return (
+    <div>
+      {!limit && categories.length > 2 && (
+        <div role="tablist" aria-label="دستهٔ پرسش‌ها" className="mb-7 flex flex-wrap gap-2">
+          {categories.map((item) => {
+            const active = category === item;
+            return (
+              <button
+                key={item}
+                role="tab"
+                aria-selected={active}
+                onClick={() => {
+                  setCategory(item);
+                  setOpenIndex(0);
+                }}
+                className={cn(
+                  'min-h-11 rounded-xl border px-4 text-xs font-bold transition',
+                  active
+                    ? 'border-gold-500 bg-gold-500 text-navy-900'
+                    : 'border-line bg-surface text-ink-muted hover:border-gold-500 hover:text-gold-600',
+                )}
+              >
+                {item}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <ul className="space-y-3">
+        {visible.map((item, index) => {
+          const open = openIndex === index;
+          return (
+            <li key={item.question} className="overflow-hidden rounded-2xl border border-line bg-surface">
+              <h3>
+                <button
+                  type="button"
+                  onClick={() => setOpenIndex(open ? null : index)}
+                  aria-expanded={open}
+                  aria-controls={`faq-panel-${index}`}
+                  id={`faq-button-${index}`}
+                  className="flex w-full min-h-14 items-center justify-between gap-4 px-5 py-4 text-right text-sm font-bold leading-[1.85] text-ink transition hover:bg-surface-2"
+                >
+                  {item.question}
+                  <ChevronDown
+                    size={18}
+                    aria-hidden
+                    className={cn(
+                      'shrink-0 text-gold-600 transition-transform duration-300',
+                      open && 'rotate-180',
+                    )}
+                  />
+                </button>
+              </h3>
+
+              <div
+                id={`faq-panel-${index}`}
+                role="region"
+                aria-labelledby={`faq-button-${index}`}
+                className={cn(
+                  'grid transition-all duration-300 ease-out motion-reduce:transition-none',
+                  open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
+                )}
+              >
+                <div className="overflow-hidden">
+                  <p className="border-t border-line px-5 py-4 text-sm leading-[2.05] text-ink-muted">{item.answer}</p>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
 }

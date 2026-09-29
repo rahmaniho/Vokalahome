@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" role="img" aria-label="خانه وکلا">
+  <rect width="320" height="80" fill="none"/>
+  <g transform="translate(248 8) scale(1)"><g fill="none" stroke="#0B1F3A" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 27.5 32 6l27 21.5"/><path d="M12.5 28.5V57h39V28.5"/><path d="M10 57h44"/><path d="M32 28v4.2"/><path d="M18.5 32.2h27"/><path d="M14.6 32.2q3.9 7.4 7.8 0"/><path d="M42.1 32.2q3.9 7.4 7.8 0"/><path d="M24.6 41.6h14.2v5.6a7.1 7.1 0 0 1-14.2 0z"/><path d="M38.8 43.2h2.3a3.3 3.3 0 0 1 0 6.6h-2.3"/></g></g>
+  <text x="228" y="40" text-anchor="end" font-family="Vazirmatn, Tahoma, sans-serif" font-size="30" font-weight="900" fill="#0B1F3A">خانه وکلا</text>
+  <text x="228" y="62" text-anchor="end" font-family="Vazirmatn, Tahoma, sans-serif" font-size="11" letter-spacing="1.6" fill="#C9A227">LAWYERS CLUB &amp; LEGAL CAFÉ</text>
+</svg>
