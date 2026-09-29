@@ -1,3 +1,5 @@
+import { SITE_URL, BASE_PATH, IS_CUSTOM_DOMAIN } from './basePath';
+
 export const SITE = {
   name: 'خانه وکلا',
   legalName: 'خانه وکلا | باشگاه تخصصی و کافه حقوقی وکلا',
@@ -13,7 +15,12 @@ export const SITE = {
   address: 'قزوین، خیابان خیام جنوبی، ساختمان خانه وکلا',
   shortAddress: 'قزوین، خیابان خیام جنوبی',
   workHours: 'هر روز ۸ صبح تا ۲۲ شب (جمعه‌ها ۱۴ تا ۲۲)',
-  domain: 'https://vokalahome.com',
+  // ⚠️ همیشه از site.config.mjs می‌آید؛ الان همان آدرس واقعی GitHub Pages است.
+  // برای دامنهٔ اختصاصی آینده به docs/CUSTOM_DOMAIN.md مراجعه کنید — چیزی را
+  // اینجا دستی عوض نکنید.
+  domain: SITE_URL,
+  basePath: BASE_PATH,
+  isCustomDomain: IS_CUSTOM_DOMAIN,
   formspreeEndpoint: 'https://formspree.io/f/YOUR_FORM_ID',
   instagram: 'https://instagram.com/',
   linkedin: 'https://linkedin.com/',
