@@ -1,4 +1,9 @@
-name: Deploy Next.js to GitHub Pages
+name: Build & Deploy to GitHub Pages
+
+# این یگانه Workflow انتشار سایت است. اگر روزی از GitHub UI پیشنهاد
+# «Configure Pages» یا الگوی پیش‌فرض Next.js داده شد، آن را اضافه نکنید:
+# دو Workflow هم‌زمان روی همان Pages environment باعث رقابت/انتشار
+# تکراری می‌شوند. فقط همین یک فایل کافی است.
 
 on:
   push:
@@ -20,25 +25,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-      
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
-      - name: Build Next.js
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build static export (output: "out")
         run: npm run build
         env:
           NODE_ENV: production
-      
-      - name: Add .nojekyll file
+
+      - name: Add .nojekyll (avoid GitHub Pages ignoring _next/ assets)
         run: touch ./out/.nojekyll
-      
-      - name: Upload artifact
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
