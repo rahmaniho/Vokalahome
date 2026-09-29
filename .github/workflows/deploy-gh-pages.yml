@@ -41,7 +41,7 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
-      - name: Build static export (output: "out")
+      - name: "Build static export (output: out)"
         run: npm run build
         env:
           NODE_ENV: production
